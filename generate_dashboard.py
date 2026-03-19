@@ -7,6 +7,7 @@ Busca dados do Jira e gera HTML atualizado
 import os
 import json
 import base64
+import sys
 from datetime import datetime, timedelta
 from collections import defaultdict
 import requests
@@ -15,6 +16,7 @@ import requests
 JIRA_EMAIL = os.getenv('JIRA_EMAIL')
 JIRA_TOKEN = os.getenv('JIRA_TOKEN')
 JIRA_BASE_URL = 'https://picpay.atlassian.net'
+REQUEST_TIMEOUT = 30  # segundos
 
 def get_jira_auth():
     """Retorna o header de autenticaÃ§Ã£o Basic Auth"""
@@ -36,20 +38,39 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
     headers = get_jira_auth()
     headers['Content-Type'] = 'application/json'
     
+    page = 1
     while True:
-        response = requests.get(url, params=params, headers=headers)
-        response.raise_for_status()
-        data = response.json()
+        print(f"  ðŸ“„ Buscando pÃ¡gina {page}...", flush=True)
+        try:
+            response = requests.get(url, params=params, headers=headers, timeout=REQUEST_TIMEOUT)
+            response.raise_for_status()
+            data = response.json()
+        except requests.exceptions.Timeout:
+            print(f"  âš ï¸ Timeout na pÃ¡gina {page}, tentando novamente...", flush=True)
+            continue
+        except requests.exceptions.RequestException as e:
+            print(f"  âŒ Erro na requisiÃ§Ã£o: {e}", flush=True)
+            raise
         
+        issues_count = len(data.get('issues', []))
         all_issues.extend(data['issues'])
+        print(f"  âœ… {issues_count} issues retornadas (total: {len(all_issues)})", flush=True)
         
         if data.get('isLast', True):
+            print(f"  ðŸ Ãšltima pÃ¡gina alcanÃ§ada", flush=True)
             break
         
         # PaginaÃ§Ã£o com nextPageToken (novo formato)
         if 'nextPageToken' in data:
             params['pageToken'] = data['nextPageToken']
+            page += 1
         else:
+            print(f"  ðŸ Sem nextPageToken, finalizando", flush=True)
+            break
+        
+        # Limite de seguranÃ§a (mÃ¡ximo 20 pÃ¡ginas = 2000 issues)
+        if page > 20:
+            print(f"  âš ï¸ Limite de 20 pÃ¡ginas atingido, abortando", flush=True)
             break
     
     return all_issues
@@ -57,10 +78,18 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
 def analyze_data():
     """Busca e analisa todos os dados necessÃ¡rios"""
     
-    print("ðŸ” Buscando todas as issues...")
-    all_issues = fetch_issues('parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491")')
+    print("ðŸ” Buscando todas as issues da iniciativa CPTECHC-491...", flush=True)
+    
+    try:
+        all_issues = fetch_issues('parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491")')
+    except Exception as e:
+        print(f"âŒ Erro ao buscar issues: {e}", flush=True)
+        raise
+    
+    print(f"âœ… Total de {len(all_issues)} issues encontradas", flush=True)
     
     # MÃ©tricas bÃ¡sicas
+    print("ðŸ“Š Calculando mÃ©tricas...", flush=True)
     total = len(all_issues)
     done = [i for i in all_issues if i['fields']['status']['name'] == 'Done']
     in_progress = [i for i in all_issues if i['fields']['status']['statusCategory']['key'] == 'indeterminate']
@@ -114,7 +143,7 @@ def analyze_data():
             month_key = date.strftime('%Y-%m')
             burndown[month_key] += 1
     
-    # Replanejamentos (buscar changelog seria ideal, mas vamos marcar manualmente as conhecidas)
+    # Replanejamentos (lista manual, seria ideal buscar do changelog)
     replanned = [
         {'key': 'COMFA-702', 'times': 4, 'info': 'Dez/25 â†’ Jun/26 (+5 meses)'},
         {'key': 'COMFA-698', 'times': 2, 'info': 'Fev/26 â†’ Jun/26 (+3 meses)'},
@@ -143,6 +172,8 @@ def analyze_data():
 
 def calculate_risk(data):
     """Calcula os indicadores de risco"""
+    
+    print("âš ï¸ Calculando riscos...", flush=True)
     
     # Risco de prazo
     months_remaining = 3  # atÃ© junho/26
@@ -201,52 +232,40 @@ def calculate_risk(data):
         }
     }
 
-def generate_html(data, risk):
-    """Gera o HTML com os dados atualizados"""
-    
-    # LÃª o template base
-    template_path = os.path.join(os.path.dirname(__file__), 'template.html')
-    with open(template_path, 'r', encoding='utf-8') as f:
-        html = f.read()
-    
-    # Substitui placeholders (vou criar template depois)
-    # Por enquanto, vou gerar HTML completo inline
-    
-    progress_pct = round((data['done'] / data['total']) * 100) if data['total'] > 0 else 0
-    inject_pct = round((data['inject'] / data['baseline']) * 100) if data['baseline'] > 0 else 0
-    
-    # Aqui eu replicaria o HTML que jÃ¡ criamos, mas com valores dinÃ¢micos
-    # Vou simplificar e criar um gerador de template
-    
-    return generate_full_html(data, risk, progress_pct, inject_pct)
-
-def generate_full_html(data, risk, progress_pct, inject_pct):
-    """Gera HTML completo (simplificado por enquanto)"""
-    # TODO: Implementar geraÃ§Ã£o completa baseada no template atual
-    pass
-
 if __name__ == '__main__':
-    print("ðŸš€ Gerando Dashboard CPTECHC-491...")
+    print("ðŸš€ Gerando Dashboard CPTECHC-491...", flush=True)
+    print(f"â° Timestamp: {datetime.now().isoformat()}", flush=True)
     
     # Validar env vars
     if not JIRA_EMAIL or not JIRA_TOKEN:
-        print("âŒ Erro: JIRA_EMAIL e JIRA_TOKEN devem estar definidos como variÃ¡veis de ambiente")
-        exit(1)
+        print("âŒ Erro: JIRA_EMAIL e JIRA_TOKEN devem estar definidos como variÃ¡veis de ambiente", flush=True)
+        sys.exit(1)
     
-    # Buscar e analisar dados
-    data = analyze_data()
-    print(f"âœ… {data['total']} issues encontradas")
-    print(f"   Done: {data['done']} | Pendentes: {data['pending']} | Baseline: {data['baseline']} | Inject: {data['inject']}")
+    print(f"âœ… Credenciais configuradas (email: {JIRA_EMAIL[:3]}***)", flush=True)
     
-    # Calcular risco
-    risk = calculate_risk(data)
-    print(f"ðŸ“Š Risco de Prazo: {risk['deadline']['icon']} {risk['deadline']['level']}")
-    print(f"ðŸ“Š Risco Operacional: {risk['operational']['icon']} {risk['operational']['level']}")
-    
-    # Salvar dados brutos
-    with open('dashboard-data.json', 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-    print("ðŸ’¾ Dados salvos em dashboard-data.json")
-    
-    # Gerar HTML (prÃ³ximo passo)
-    print("â³ GeraÃ§Ã£o do HTML serÃ¡ implementada no prÃ³ximo passo...")
+    try:
+        # Buscar e analisar dados
+        data = analyze_data()
+        print(f"âœ… AnÃ¡lise completa:", flush=True)
+        print(f"   Total: {data['total']} issues", flush=True)
+        print(f"   Done: {data['done']} | Pendentes: {data['pending']}", flush=True)
+        print(f"   Baseline: {data['baseline']} | Inject: {data['inject']}", flush=True)
+        
+        # Calcular risco
+        risk = calculate_risk(data)
+        print(f"ðŸ“Š Risco de Prazo: {risk['deadline']['icon']} {risk['deadline']['level']}", flush=True)
+        print(f"ðŸ“Š Risco Operacional: {risk['operational']['icon']} {risk['operational']['level']}", flush=True)
+        
+        # Salvar dados brutos
+        output_file = 'dashboard-data.json'
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump({'data': data, 'risk': risk}, f, indent=2, ensure_ascii=False)
+        print(f"ðŸ’¾ Dados salvos em {output_file}", flush=True)
+        
+        print("âœ… Dashboard gerado com sucesso!", flush=True)
+        
+    except Exception as e:
+        print(f"âŒ Erro fatal: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
