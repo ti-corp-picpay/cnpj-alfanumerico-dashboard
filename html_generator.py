@@ -13,6 +13,7 @@ def generate_html(data, risk):
     # Calcular mÃ©tricas derivadas
     progress_pct = round((data['done'] / data['total']) * 100) if data['total'] > 0 else 0
     inject_pct = round((data['inject'] / data['baseline']) * 100) if data['baseline'] > 0 else 0
+    no_duedate_total = data['no_duedate']
     
     # Top 5 squads com mais issues pendentes
     top_squads = list(data['squad_pending'].items())[:5]
@@ -513,7 +514,7 @@ def generate_html(data, risk):
         
         <!-- Issues sem Due Date -->
         <div class="section">
-            <div class="section-title">âš ï¸ Issues sem Due Date ({data['no_duedate']} no total)</div>
+            <div class="section-title">âš ï¸ Issues sem Due Date ({no_duedate_total} no total)</div>
             <table>
                 <thead>
                     <tr>
@@ -629,8 +630,8 @@ if __name__ == '__main__':
     # Gerar HTML
     html = generate_html(data, risk)
     
-    # Salvar
-    with open('dashboard.html', 'w', encoding='utf-8') as f:
+    # Salvar com UTF-8 (sem BOM, que Ã© o padrÃ£o correto pra web)
+    with open('dashboard.html', 'w', encoding='utf-8', newline='') as f:
         f.write(html)
     
     print("âœ… dashboard.html gerado com sucesso!")
