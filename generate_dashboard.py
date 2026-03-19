@@ -1,0 +1,252 @@
+#!/usr/bin/env python3
+"""
+Dashboard Generator - CPTECHC-491
+Busca dados do Jira e gera HTML atualizado
+"""
+
+import os
+import json
+import base64
+from datetime import datetime, timedelta
+from collections import defaultdict
+import requests
+
+# ConfiguraÃ§Ã£o via env vars
+JIRA_EMAIL = os.getenv('JIRA_EMAIL')
+JIRA_TOKEN = os.getenv('JIRA_TOKEN')
+JIRA_BASE_URL = 'https://picpay.atlassian.net'
+
+def get_jira_auth():
+    """Retorna o header de autenticaÃ§Ã£o Basic Auth"""
+    credentials = f"{JIRA_EMAIL}:{JIRA_TOKEN}"
+    encoded = base64.b64encode(credentials.encode()).decode()
+    return {'Authorization': f'Basic {encoded}'}
+
+def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created'):
+    """Busca issues do Jira com paginaÃ§Ã£o"""
+    url = f"{JIRA_BASE_URL}/rest/api/2/search/jql"
+    all_issues = []
+    
+    params = {
+        'jql': jql,
+        'fields': fields,
+        'maxResults': 100
+    }
+    
+    headers = get_jira_auth()
+    headers['Content-Type'] = 'application/json'
+    
+    while True:
+        response = requests.get(url, params=params, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        
+        all_issues.extend(data['issues'])
+        
+        if data.get('isLast', True):
+            break
+        
+        # PaginaÃ§Ã£o com nextPageToken (novo formato)
+        if 'nextPageToken' in data:
+            params['pageToken'] = data['nextPageToken']
+        else:
+            break
+    
+    return all_issues
+
+def analyze_data():
+    """Busca e analisa todos os dados necessÃ¡rios"""
+    
+    print("ðŸ” Buscando todas as issues...")
+    all_issues = fetch_issues('parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491")')
+    
+    # MÃ©tricas bÃ¡sicas
+    total = len(all_issues)
+    done = [i for i in all_issues if i['fields']['status']['name'] == 'Done']
+    in_progress = [i for i in all_issues if i['fields']['status']['statusCategory']['key'] == 'indeterminate']
+    backlog = [i for i in all_issues if i['fields']['status']['statusCategory']['key'] == 'new']
+    cancelled = [i for i in all_issues if i['fields']['status']['name'] == 'Cancelled']
+    
+    # Issues pendentes
+    pending = [i for i in all_issues if i['fields']['status']['name'] not in ['Done', 'Cancelled']]
+    
+    # Baseline vs Inject (criadas atÃ© 31/12/2025 vs depois)
+    baseline_date = datetime(2025, 12, 31)
+    baseline = [i for i in all_issues if datetime.fromisoformat(i['fields']['created'].replace('Z', '+00:00')).replace(tzinfo=None) <= baseline_date]
+    inject = [i for i in all_issues if datetime.fromisoformat(i['fields']['created'].replace('Z', '+00:00')).replace(tzinfo=None) > baseline_date]
+    
+    # Issues sem due date (pendentes)
+    no_duedate = [i for i in pending if not i['fields'].get('duedate')]
+    
+    # Por prioridade (pendentes)
+    priority_counts = defaultdict(int)
+    for issue in pending:
+        priority = issue['fields'].get('priority', {})
+        priority_name = priority.get('name', 'Sem prioridade') if priority else 'Sem prioridade'
+        priority_counts[priority_name] += 1
+    
+    # Por squad (pendentes)
+    squad_pending = defaultdict(int)
+    squad_total = defaultdict(int)
+    squad_done = defaultdict(int)
+    
+    for issue in all_issues:
+        project = issue['fields']['project']['key']
+        squad_total[project] += 1
+        if issue['fields']['status']['name'] == 'Done':
+            squad_done[project] += 1
+    
+    for issue in pending:
+        project = issue['fields']['project']['key']
+        squad_pending[project] += 1
+    
+    # Issues sem due date por squad
+    no_duedate_by_squad = defaultdict(int)
+    for issue in no_duedate:
+        project = issue['fields']['project']['key']
+        no_duedate_by_squad[project] += 1
+    
+    # Burndown (conclusÃµes por mÃªs)
+    burndown = defaultdict(int)
+    for issue in done:
+        if issue['fields'].get('resolutiondate'):
+            date = datetime.fromisoformat(issue['fields']['resolutiondate'].replace('Z', '+00:00'))
+            month_key = date.strftime('%Y-%m')
+            burndown[month_key] += 1
+    
+    # Replanejamentos (buscar changelog seria ideal, mas vamos marcar manualmente as conhecidas)
+    replanned = [
+        {'key': 'COMFA-702', 'times': 4, 'info': 'Dez/25 â†’ Jun/26 (+5 meses)'},
+        {'key': 'COMFA-698', 'times': 2, 'info': 'Fev/26 â†’ Jun/26 (+3 meses)'},
+        {'key': 'HCM-788', 'times': 2, 'info': 'Jan/26 â†’ Abr/26 (+2.5 meses)'}
+    ]
+    
+    return {
+        'total': total,
+        'done': len(done),
+        'in_progress': len(in_progress),
+        'backlog': len(backlog),
+        'cancelled': len(cancelled),
+        'pending': len(pending),
+        'baseline': len(baseline),
+        'inject': len(inject),
+        'no_duedate': len(no_duedate),
+        'no_duedate_by_squad': dict(no_duedate_by_squad),
+        'priority_counts': dict(priority_counts),
+        'squad_pending': dict(sorted(squad_pending.items(), key=lambda x: x[1], reverse=True)),
+        'squad_total': dict(squad_total),
+        'squad_done': dict(squad_done),
+        'burndown': dict(sorted(burndown.items())),
+        'replanned': replanned,
+        'generated_at': datetime.now().isoformat()
+    }
+
+def calculate_risk(data):
+    """Calcula os indicadores de risco"""
+    
+    # Risco de prazo
+    months_remaining = 3  # atÃ© junho/26
+    pending = data['pending']
+    
+    # MÃ©dia dos Ãºltimos 3 meses
+    recent_months = list(data['burndown'].values())[-3:] if len(data['burndown']) >= 3 else list(data['burndown'].values())
+    avg_velocity = sum(recent_months) / len(recent_months) if recent_months else 0
+    
+    required_velocity = pending / months_remaining if months_remaining > 0 else pending
+    
+    if avg_velocity >= required_velocity * 1.2:
+        deadline_risk = 'BAIXO'
+        deadline_color = 'success'
+        deadline_icon = 'ðŸŸ¢'
+    elif avg_velocity >= required_velocity * 0.8:
+        deadline_risk = 'MÃ‰DIO'
+        deadline_color = 'warning'
+        deadline_icon = 'ðŸŸ¡'
+    else:
+        deadline_risk = 'ALTO'
+        deadline_color = 'danger'
+        deadline_icon = 'ðŸ”´'
+    
+    # Risco operacional
+    critical_count = data['priority_counts'].get('Critical', 0)
+    no_date_count = data['no_duedate']
+    
+    if critical_count >= 15 or no_date_count >= 10:
+        operational_risk = 'ALTO'
+        operational_color = 'danger'
+        operational_icon = 'ðŸ”´'
+    elif critical_count >= 8 or no_date_count >= 5:
+        operational_risk = 'MÃ‰DIO'
+        operational_color = 'warning'
+        operational_icon = 'ðŸŸ¡'
+    else:
+        operational_risk = 'BAIXO'
+        operational_color = 'success'
+        operational_icon = 'ðŸŸ¢'
+    
+    return {
+        'deadline': {
+            'level': deadline_risk,
+            'color': deadline_color,
+            'icon': deadline_icon,
+            'avg_velocity': avg_velocity,
+            'required_velocity': required_velocity
+        },
+        'operational': {
+            'level': operational_risk,
+            'color': operational_color,
+            'icon': operational_icon,
+            'critical_count': critical_count,
+            'no_date_count': no_date_count
+        }
+    }
+
+def generate_html(data, risk):
+    """Gera o HTML com os dados atualizados"""
+    
+    # LÃª o template base
+    template_path = os.path.join(os.path.dirname(__file__), 'template.html')
+    with open(template_path, 'r', encoding='utf-8') as f:
+        html = f.read()
+    
+    # Substitui placeholders (vou criar template depois)
+    # Por enquanto, vou gerar HTML completo inline
+    
+    progress_pct = round((data['done'] / data['total']) * 100) if data['total'] > 0 else 0
+    inject_pct = round((data['inject'] / data['baseline']) * 100) if data['baseline'] > 0 else 0
+    
+    # Aqui eu replicaria o HTML que jÃ¡ criamos, mas com valores dinÃ¢micos
+    # Vou simplificar e criar um gerador de template
+    
+    return generate_full_html(data, risk, progress_pct, inject_pct)
+
+def generate_full_html(data, risk, progress_pct, inject_pct):
+    """Gera HTML completo (simplificado por enquanto)"""
+    # TODO: Implementar geraÃ§Ã£o completa baseada no template atual
+    pass
+
+if __name__ == '__main__':
+    print("ðŸš€ Gerando Dashboard CPTECHC-491...")
+    
+    # Validar env vars
+    if not JIRA_EMAIL or not JIRA_TOKEN:
+        print("âŒ Erro: JIRA_EMAIL e JIRA_TOKEN devem estar definidos como variÃ¡veis de ambiente")
+        exit(1)
+    
+    # Buscar e analisar dados
+    data = analyze_data()
+    print(f"âœ… {data['total']} issues encontradas")
+    print(f"   Done: {data['done']} | Pendentes: {data['pending']} | Baseline: {data['baseline']} | Inject: {data['inject']}")
+    
+    # Calcular risco
+    risk = calculate_risk(data)
+    print(f"ðŸ“Š Risco de Prazo: {risk['deadline']['icon']} {risk['deadline']['level']}")
+    print(f"ðŸ“Š Risco Operacional: {risk['operational']['icon']} {risk['operational']['level']}")
+    
+    # Salvar dados brutos
+    with open('dashboard-data.json', 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    print("ðŸ’¾ Dados salvos em dashboard-data.json")
+    
+    # Gerar HTML (prÃ³ximo passo)
+    print("â³ GeraÃ§Ã£o do HTML serÃ¡ implementada no prÃ³ximo passo...")
