@@ -30,18 +30,10 @@ jobs:
       run: |
         python generate_dashboard.py
     
-    - name: Upload para Nitro Link
-      env:
-        NITRO_TOKEN: ${{ secrets.NITRO_TOKEN }}
-      run: |
-        # Fazer upload do HTML gerado
-        # (vou implementar o script de upload depois)
-        echo "Dashboard gerado com sucesso!"
-    
-    - name: Commit dados (opcional)
+    - name: Commit e deploy
       run: |
         git config user.name "GitHub Actions Bot"
         git config user.email "actions@github.com"
-        git add dashboard-data.json || true
-        git commit -m "chore: atualizar dados do dashboard $(date +'%Y-%m-%d')" || true
-        git push || true
+        git add dashboard.html dashboard-data.json
+        git commit -m "chore: atualizar dashboard $(date +'%Y-%m-%d %H:%M')" || echo "Sem mudanÃ§as"
+        git push || echo "Nada para push"
