@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Executivo - CPTECHC-491</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            color: #1a1a1a;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            border-left: 6px solid #21C25E;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .subtitle a {
+            color: #21C25E;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .subtitle a:hover {
+            text-decoration: underline;
+        }
+        
+        .update-time {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-left: auto;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .kpi-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .kpi-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+        
+        .kpi-detail {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #21C25E 0%, #1a9b4d 100%);
+            transition: width 0.5s ease;
+        }
+        
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .risk-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            border-left: 4px solid;
+        }
+        
+        .risk-card.success { border-left-color: #21C25E; }
+        .risk-card.warning { border-left-color: #F59E0B; }
+        .risk-card.danger { border-left-color: #EF4444; }
+        
+        .risk-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .risk-icon {
+            font-size: 2rem;
+        }
+        
+        .risk-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .risk-level {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .risk-level.success { color: #21C25E; }
+        .risk-level.warning { color: #F59E0B; }
+        .risk-level.danger { color: #EF4444; }
+        
+        .risk-detail {
+            font-size: 0.9rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #21C25E;
+            border-radius: 2px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            text-align: left;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        tr:hover {
+            background: #f9fafb;
+        }
+        
+        .squad-name {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .number {
+            font-weight: 600;
+            color: #21C25E;
+        }
+        
+        .link {
+            color: #21C25E;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .link:hover {
+            text-decoration: underline;
+        }
+        
+        .chart {
+            margin-top: 1.5rem;
+        }
+        
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .bar-label {
+            min-width: 80px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #4b5563;
+        }
+        
+        .bar {
+            flex: 1;
+            height: 32px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #21C25E 0%, #1a9b4d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.75rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: width 0.5s ease;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dotted #6b7280;
+        }
+        
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a1a;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 100;
+            margin-bottom: 0.5rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge.success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .badge.warning {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .badge.danger {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .risk-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ðŸ“Š Dashboard Executivo - CPTECHC-491</h1>
+            <div class="subtitle">
+                <span>Iniciativa: <strong>CNPJ AlfanumÃ©rico - AdequaÃ§Ãµes Multi-Squad</strong></span>
+                <a href="https://picpay.atlassian.net/browse/CPTECHC-491" target="_blank">Ver no Jira â†’</a>
+                <span class="update-time">Atualizado em: 19/03/2026 20:23</span>
+            </div>
+        </header>
+        
+        <!-- KPIs Principais -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total de Issues</div>
+                <div class="kpi-value">2000</div>
+                <div class="kpi-detail">
+                    <a href="https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)" target="_blank" class="link">Ver todas â†’</a>
+                </div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-label">ConcluÃ­das</div>
+                <div class="kpi-value" style="color: #21C25E;">1400</div>
+                <div class="kpi-detail">70% do total</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 70%"></div>
+                </div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-label">Pendentes</div>
+                <div class="kpi-value" style="color: #F59E0B;">560</div>
+                <div class="kpi-detail">
+                    <a href="https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver pendentes â†’</a>
+                </div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-label">
+                    <span class="tooltip" data-tooltip="Scope creep: issues criadas apÃ³s 31/12/2025">Inject (Scope Creep)</span>
+                </div>
+                <div class="kpi-value" style="color: #EF4444;">840</div>
+                <div class="kpi-detail">+72% vs baseline (1160)</div>
+            </div>
+        </div>
+        
+        <!-- FarÃ³is de Risco -->
+        <div class="risk-grid">
+            <div class="risk-card success">
+                <div class="risk-header">
+                    <span class="risk-icon">ðŸŸ¢</span>
+                    <div>
+                        <div class="risk-title">Risco de Prazo</div>
+                        <div class="risk-level success">BAIXO</div>
+                    </div>
+                </div>
+                <div class="risk-detail">
+                    Velocidade mÃ©dia: <strong>300.0 issues/mÃªs</strong><br>
+                    Velocidade necessÃ¡ria: <strong>186.7 issues/mÃªs</strong><br>
+                    560 issues restantes atÃ© Jun/26
+                </div>
+            </div>
+            
+            <div class="risk-card danger">
+                <div class="risk-header">
+                    <span class="risk-icon">ðŸ”´</span>
+                    <div>
+                        <div class="risk-title">Risco Operacional</div>
+                        <div class="risk-level danger">ALTO</div>
+                    </div>
+                </div>
+                <div class="risk-detail">
+                    Issues crÃ­ticas: <strong>300</strong><br>
+                    Issues sem due date: <strong>180</strong><br>
+                    Requer atenÃ§Ã£o imediata
+                </div>
+            </div>
+        </div>
+        
+        <!-- Squads com Mais PendÃªncias -->
+        <div class="section">
+            <div class="section-title">ðŸŽ¯ Top 5 Squads - Issues Pendentes</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Squad</th>
+                        <th>Pendentes</th>
+                        <th>Total</th>
+                        <th>ConcluÃ­das</th>
+                        <th>% Completo</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="squad-name">COMFA</td>
+                        <td><span class="number">180</span></td>
+                        <td>620</td>
+                        <td>440</td>
+                        <td>71%</td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20COMFA%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                    </tr>
+
+                    <tr>
+                        <td class="squad-name">HCM</td>
+                        <td><span class="number">140</span></td>
+                        <td>240</td>
+                        <td>100</td>
+                        <td>42%</td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20HCM%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                    </tr>
+
+                    <tr>
+                        <td class="squad-name">GEL</td>
+                        <td><span class="number">100</span></td>
+                        <td>140</td>
+                        <td>40</td>
+                        <td>29%</td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20GEL%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                    </tr>
+
+                    <tr>
+                        <td class="squad-name">TICORP</td>
+                        <td><span class="number">80</span></td>
+                        <td>80</td>
+                        <td>0</td>
+                        <td>0%</td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20TICORP%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                    </tr>
+
+                    <tr>
+                        <td class="squad-name">MELCOR</td>
+                        <td><span class="number">20</span></td>
+                        <td>20</td>
+                        <td>0</td>
+                        <td>0%</td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20MELCOR%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Issues sem Due Date -->
+        <div class="section">
+            <div class="section-title">âš ï¸ Issues sem Due Date ({data['no_duedate']} no total)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Squad</th>
+                        <th>Issues sem Data</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="squad-name">HCM</td>
+                        <td><span class="number">100</span></td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20HCM%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20duedate%20is%20EMPTY%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                    </tr>
+
+                    <tr>
+                        <td class="squad-name">GEL</td>
+                        <td><span class="number">80</span></td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20GEL%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20duedate%20is%20EMPTY%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <div style="margin-top: 1rem; color: #6b7280; font-size: 0.9rem;">
+                ðŸ’¡ <strong>AÃ§Ã£o requerida:</strong> Agendar revisÃ£o com os squads para definir datas realistas.
+            </div>
+        </div>
+        
+        <!-- Burndown -->
+        <div class="section">
+            <div class="section-title">ðŸ“ˆ Burndown - Ãšltimos 6 Meses</div>
+            <div class="chart bar-chart">
+
+                <div class="bar-item">
+                    <div class="bar-label">Oct/25</div>
+                    <div class="bar">
+                        <div class="bar-fill" style="width: 52.63157894736842%">200</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">Nov/25</div>
+                    <div class="bar">
+                        <div class="bar-fill" style="width: 10.526315789473683%">40</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">Dec/25</div>
+                    <div class="bar">
+                        <div class="bar-fill" style="width: 5.263157894736842%">20</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">Jan/26</div>
+                    <div class="bar">
+                        <div class="bar-fill" style="width: 57.89473684210527%">220</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">Feb/26</div>
+                    <div class="bar">
+                        <div class="bar-fill" style="width: 100.0%">380</div>
+                    </div>
+                </div>
+
+                <div class="bar-item">
+                    <div class="bar-label">Mar/26</div>
+                    <div class="bar">
+                        <div class="bar-fill" style="width: 78.94736842105263%">300</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- Replanejamentos -->
+        <div class="section">
+            <div class="section-title">ðŸ”„ Replanejamentos CrÃ­ticos</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Issue</th>
+                        <th>Vezes Replanejada</th>
+                        <th>Impacto</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <tr>
+                        <td class="squad-name">COMFA-702</td>
+                        <td><span class="badge danger">4x</span></td>
+                        <td>Dez/25 â†’ Jun/26 (+5 meses)</td>
+                        <td><a href="https://picpay.atlassian.net/browse/COMFA-702" target="_blank" class="link">Ver issue â†’</a></td>
+                    </tr>
+
+                    <tr>
+                        <td class="squad-name">COMFA-698</td>
+                        <td><span class="badge warning">2x</span></td>
+                        <td>Fev/26 â†’ Jun/26 (+3 meses)</td>
+                        <td><a href="https://picpay.atlassian.net/browse/COMFA-698" target="_blank" class="link">Ver issue â†’</a></td>
+                    </tr>
+
+                    <tr>
+                        <td class="squad-name">HCM-788</td>
+                        <td><span class="badge warning">2x</span></td>
+                        <td>Jan/26 â†’ Abr/26 (+2.5 meses)</td>
+                        <td><a href="https://picpay.atlassian.net/browse/HCM-788" target="_blank" class="link">Ver issue â†’</a></td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <div style="margin-top: 1rem; color: #6b7280; font-size: 0.9rem;">
+                ðŸ’¡ <strong>AÃ§Ã£o requerida:</strong> Revisar impedimentos e dependÃªncias dessas issues.
+            </div>
+        </div>
+        
+        <footer>
+            Dashboard gerado automaticamente via GitHub Actions<br>
+            Dados atualizados diariamente Ã s 08h (horÃ¡rio de BrasÃ­lia)
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+{
+  "data": {
+    "total": 2000,
+    "done": 1400,
+    "in_progress": 480,
+    "backlog": 80,
+    "cancelled": 40,
+    "pending": 560,
+    "baseline": 1160,
+    "inject": 840,
+    "no_duedate": 180,
+    "no_duedate_by_squad": {
+      "HCM": 100,
+      "GEL": 80
+    },
+    "priority_counts": {
+      "Critical": 300,
+      "High": 40,
+      "Low": 120,
+      "Média": 40,
+      "Médio": 60
+    },
+    "squad_pending": {
+      "COMFA": 180,
+      "HCM": 140,
+      "GEL": 100,
+      "TICORP": 80,
+      "MELCOR": 20,
+      "EFCONT": 20,
+      "CFERP": 20
+    },
+    "squad_total": {
+      "TICORP": 80,
+      "PLD": 860,
+      "MELCOR": 20,
+      "HCM": 240,
+      "GEL": 140,
+      "EFCONT": 20,
+      "COMFA": 620,
+      "CFERP": 20
+    },
+    "squad_done": {
+      "PLD": 820,
+      "HCM": 100,
+      "GEL": 40,
+      "COMFA": 440
+    },
+    "burndown": {
+      "2025-09": 240,
+      "2025-10": 200,
+      "2025-11": 40,
+      "2025-12": 20,
+      "2026-01": 220,
+      "2026-02": 380,
+      "2026-03": 300
+    },
+    "replanned": [
+      {
+        "key": "COMFA-702",
+        "times": 4,
+        "info": "Dez/25 â†’ Jun/26 (+5 meses)"
+      },
+      {
+        "key": "COMFA-698",
+        "times": 2,
+        "info": "Fev/26 â†’ Jun/26 (+3 meses)"
+      },
+      {
+        "key": "HCM-788",
+        "times": 2,
+        "info": "Jan/26 â†’ Abr/26 (+2.5 meses)"
+      }
+    ],
+    "generated_at": "2026-03-19T20:23:50.965798"
+  },
+  "risk": {
+    "deadline": {
+      "level": "BAIXO",
+      "color": "success",
+      "icon": "ðŸŸ¢",
+      "avg_velocity": 300.0,
+      "required_velocity": 186.66666666666666
+    },
+    "operational": {
+      "level": "ALTO",
+      "color": "danger",
+      "icon": "ðŸ”´",
+      "critical_count": 300,
+      "no_date_count": 180
+    }
+  }
+}
