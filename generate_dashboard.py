@@ -262,7 +262,15 @@ if __name__ == '__main__':
             json.dump({'data': data, 'risk': risk}, f, indent=2, ensure_ascii=False)
         print(f"ðŸ’¾ Dados salvos em {output_file}", flush=True)
         
-        print("âœ… Dashboard gerado com sucesso!", flush=True)
+        # Gerar HTML
+        print("ðŸŽ¨ Gerando HTML do dashboard...", flush=True)
+        from html_generator import generate_html
+        html = generate_html(data, risk)
+        with open('dashboard.html', 'w', encoding='utf-8') as f:
+            f.write(html)
+        print("âœ… dashboard.html gerado com sucesso!", flush=True)
+        
+        print("âœ… Dashboard completo gerado com sucesso!", flush=True)
         
     except Exception as e:
         print(f"âŒ Erro fatal: {e}", flush=True)
