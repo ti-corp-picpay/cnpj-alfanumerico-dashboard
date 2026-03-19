@@ -1,0 +1,47 @@
+name: Update Dashboard
+
+on:
+  schedule:
+    # Roda todo dia Ã s 8h (horÃ¡rio de BrasÃ­lia = 11h UTC)
+    - cron: '0 11 * * *'
+  workflow_dispatch: # Permite rodar manualmente
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout cÃ³digo
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Instalar dependÃªncias
+      run: |
+        pip install -r requirements.txt
+    
+    - name: Gerar dashboard
+      env:
+        JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+        JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+      run: |
+        python generate_dashboard.py
+    
+    - name: Upload para Nitro Link
+      env:
+        NITRO_TOKEN: ${{ secrets.NITRO_TOKEN }}
+      run: |
+        # Fazer upload do HTML gerado
+        # (vou implementar o script de upload depois)
+        echo "Dashboard gerado com sucesso!"
+    
+    - name: Commit dados (opcional)
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "actions@github.com"
+        git add dashboard-data.json || true
+        git commit -m "chore: atualizar dados do dashboard $(date +'%Y-%m-%d')" || true
+        git push || true
