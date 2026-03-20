@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Executivo - CPTECHC-491</title>
+    <title>CNPJ Alfanumérico - Dashboard TI CORP</title>
     <style>
         * {
             margin: 0;
@@ -25,44 +25,82 @@
         }
         
         header {
-            background: white;
-            padding: 2rem;
+            background: linear-gradient(135deg, #1e5128 0%, #2d6a4f 50%, #40916c 100%);
+            color: white;
+            padding: 2rem 2.5rem;
             border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 8px 32px rgba(30, 81, 40, 0.3);
             margin-bottom: 2rem;
-            border-left: 6px solid #21C25E;
+            position: relative;
+        }
+        
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo-picpay {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.2em;
+            color: #21C25E;
+        }
+        
+        .bu-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
         
         h1 {
-            font-size: 2rem;
+            font-size: 2.2em;
             font-weight: 700;
-            color: #1a1a1a;
-            margin-bottom: 0.5rem;
+            color: white;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+        
+        h1 a {
+            color: white;
+            text-decoration: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            transition: border-color 0.3s ease;
+        }
+        
+        h1 a:hover {
+            border-bottom-color: rgba(255, 255, 255, 0.8);
         }
         
         .subtitle {
-            color: #6b7280;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.05em;
+            line-height: 1.6;
+            max-width: 900px;
         }
         
-        .subtitle a {
-            color: #21C25E;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .subtitle a:hover {
-            text-decoration: underline;
-        }
-        
-        .update-time {
-            font-size: 0.85rem;
-            color: #9ca3af;
-            margin-left: auto;
+        .timestamp {
+            margin-top: 16px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
         }
         
         .kpi-grid {
@@ -361,98 +399,278 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* Issues Bloqueadas */
+        .blocked-issues-grid {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .blocked-issue-card {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .blocked-issue-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+        }
+        
+        .blocked-issue-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .blocked-issue-key {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #991b1b;
+        }
+        
+        .blocked-issue-squad {
+            font-size: 0.85em;
+            padding: 4px 10px;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 4px;
+            color: #991b1b;
+            font-weight: 600;
+        }
+        
+        .blocked-issue-priority {
+            font-size: 0.85em;
+            padding: 4px 10px;
+            background: white;
+            border-radius: 4px;
+            color: #991b1b;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .blocked-issue-summary {
+            color: #7f1d1d;
+            font-size: 0.95em;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        
+        .blocked-issue-status {
+            font-size: 0.85em;
+            color: #991b1b;
+            opacity: 0.8;
+        }
+        
+        /* Distribuição por Squad */
+        .squad-distribution {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .squad-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 4px solid #21C25E;
+        }
+        
+        .squad-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .squad-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .squad-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #1e5128;
+        }
+        
+        .squad-total {
+            font-size: 2em;
+            font-weight: 700;
+            color: #2d6a4f;
+        }
+        
+        .squad-breakdown {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .squad-stat {
+            text-align: center;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .squad-stat-value {
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+        
+        .squad-stat-label {
+            font-size: 0.8em;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        
+        .squad-stat.done .squad-stat-value {
+            color: #21C25E;
+        }
+        
+        .squad-stat.pending .squad-stat-value {
+            color: #f59e0b;
+        }
+        
+        .squad-stat.cancelled .squad-stat-value {
+            color: #94a3b8;
+        }
+        
+        .squad-progress {
+            margin-top: 12px;
+        }
+        
+        .squad-progress-label {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .squad-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .squad-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2d6a4f 0%, #52b788 100%);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>ðŸ“Š Dashboard Executivo - CPTECHC-491</h1>
-            <div class="subtitle">
-                <span>Iniciativa: <strong>CNPJ AlfanumÃ©rico - AdequaÃ§Ãµes Multi-Squad</strong></span>
-                <a href="https://picpay.atlassian.net/browse/CPTECHC-491" target="_blank">Ver no Jira â†’</a>
-                <span class="update-time">Atualizado em: 20/03/2026 15:13</span>
+            <div class="header-top">
+                <div class="logo-container">
+                    <div class="logo-picpay">💚</div>
+                    <div class="bu-name">TI CORP</div>
+                </div>
             </div>
+            <h1>
+                <a href="https://picpay.atlassian.net/browse/CPTECHC-491" target="_blank" title="Ver iniciativa no Jira">
+                    📊 CNPJ Alfanumérico
+                </a>
+            </h1>
+            <div class="subtitle">
+                Programa de adequação de todos os sistemas TI CORP ao novo formato de CNPJ alfanumérico (IN RFB nº 2.229/2024). Vigência a partir de julho/2026 — apenas novos registros.
+            </div>
+            <div class="timestamp">📅 Atualizado em: 20/03/2026 19:37 (Brasília)</div>
         </header>
         
         <!-- KPIs Principais -->
         <div class="kpi-grid">
             <div class="kpi-card">
                 <div class="kpi-label">Total de Issues</div>
-                <div class="kpi-value">100</div>
+                <div class="kpi-value">108</div>
                 <div class="kpi-detail">
-                    <a href="https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)" target="_blank" class="link">Ver todas â†’</a>
+                    <a href="https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)" target="_blank" class="link">Ver todas →</a>
                 </div>
             </div>
             
             <div class="kpi-card">
-                <div class="kpi-label">ConcluÃ­das</div>
-                <div class="kpi-value" style="color: #21C25E;">74</div>
-                <div class="kpi-detail">74% do total</div>
+                <div class="kpi-label">Concluídas</div>
+                <div class="kpi-value" style="color: #21C25E;">76</div>
+                <div class="kpi-detail">70% do total</div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: 74%"></div>
+                    <div class="progress-fill" style="width: 70%"></div>
                 </div>
             </div>
             
             <div class="kpi-card">
                 <div class="kpi-label">Pendentes</div>
-                <div class="kpi-value" style="color: #F59E0B;">24</div>
+                <div class="kpi-value" style="color: #F59E0B;">30</div>
                 <div class="kpi-detail">
-                    <a href="https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver pendentes â†’</a>
+                    <a href="https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver pendentes →</a>
                 </div>
             </div>
             
             <div class="kpi-card">
                 <div class="kpi-label">
-                    <span class="tooltip" data-tooltip="Scope creep: issues criadas apÃ³s 31/12/2025">Inject (Scope Creep)</span>
+                    <span class="tooltip" data-tooltip="Scope creep: issues criadas após 31/12/2025">Inject (Scope Creep)</span>
                 </div>
-                <div class="kpi-value" style="color: #EF4444;">45</div>
-                <div class="kpi-detail">+82% vs baseline (55)</div>
+                <div class="kpi-value" style="color: #EF4444;">46</div>
+                <div class="kpi-detail">+74% vs baseline (62)</div>
             </div>
         </div>
         
-        <!-- FarÃ³is de Risco -->
+        <!-- Faróis de Risco -->
         <div class="risk-grid">
             <div class="risk-card success">
                 <div class="risk-header">
-                    <span class="risk-icon">ðŸŸ¢</span>
+                    <span class="risk-icon">🟢</span>
                     <div>
                         <div class="risk-title">Risco de Prazo</div>
                         <div class="risk-level success">BAIXO</div>
                     </div>
                 </div>
                 <div class="risk-detail">
-                    Velocidade mÃ©dia: <strong>16.7 issues/mÃªs</strong><br>
-                    Velocidade necessÃ¡ria: <strong>8.0 issues/mÃªs</strong><br>
-                    24 issues restantes atÃ© Jun/26
+                    Velocidade média: <strong>17.0 issues/mês</strong><br>
+                    Velocidade necessária: <strong>10.0 issues/mês</strong><br>
+                    30 issues restantes até Jun/26
                 </div>
             </div>
             
-            <div class="risk-card warning">
+            <div class="risk-card danger">
                 <div class="risk-header">
-                    <span class="risk-icon">ðŸŸ¡</span>
+                    <span class="risk-icon">🔴</span>
                     <div>
                         <div class="risk-title">Risco Operacional</div>
-                        <div class="risk-level warning">MÃ‰DIO</div>
+                        <div class="risk-level danger">ALTO</div>
                     </div>
                 </div>
                 <div class="risk-detail">
-                    Issues crÃ­ticas: <strong>12</strong><br>
+                    Issues críticas: <strong>15</strong><br>
                     Issues sem due date: <strong>8</strong><br>
-                    Requer atenÃ§Ã£o imediata
+                    Requer atenção imediata
                 </div>
             </div>
         </div>
         
-        <!-- Squads com Mais PendÃªncias -->
+        <!-- Squads com Mais Pendências -->
         <div class="section">
-            <div class="section-title">ðŸŽ¯ Top 5 Squads - Issues Pendentes</div>
+            <div class="section-title">🎯 Top 5 Squads - Issues Pendentes</div>
             <table>
                 <thead>
                     <tr>
                         <th>Squad</th>
                         <th>Pendentes</th>
                         <th>Total</th>
-                        <th>ConcluÃ­das</th>
+                        <th>Concluídas</th>
                         <th>% Completo</th>
                         <th></th>
                     </tr>
@@ -460,30 +678,30 @@
                 <tbody>
 
                     <tr>
+                        <td class="squad-name">COMFA</td>
+                        <td><span class="number">8</span></td>
+                        <td>31</td>
+                        <td>23</td>
+                        <td>74%</td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20COMFA%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues →</a></td>
+                    </tr>
+
+                    <tr>
                         <td class="squad-name">HCM</td>
                         <td><span class="number">7</span></td>
                         <td>12</td>
                         <td>5</td>
                         <td>42%</td>
-                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20HCM%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20HCM%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues →</a></td>
                     </tr>
 
                     <tr>
-                        <td class="squad-name">COMFA</td>
-                        <td><span class="number">7</span></td>
-                        <td>28</td>
-                        <td>21</td>
-                        <td>75%</td>
-                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20COMFA%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
-                    </tr>
-
-                    <tr>
-                        <td class="squad-name">TICORP</td>
-                        <td><span class="number">4</span></td>
-                        <td>4</td>
+                        <td class="squad-name">CFERP</td>
+                        <td><span class="number">5</span></td>
+                        <td>5</td>
                         <td>0</td>
                         <td>0%</td>
-                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20TICORP%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20CFERP%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues →</a></td>
                     </tr>
 
                     <tr>
@@ -492,16 +710,16 @@
                         <td>11</td>
                         <td>7</td>
                         <td>64%</td>
-                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20GEL%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20GEL%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues →</a></td>
                     </tr>
 
                     <tr>
-                        <td class="squad-name">MELCOR</td>
-                        <td><span class="number">1</span></td>
-                        <td>1</td>
+                        <td class="squad-name">TICORP</td>
+                        <td><span class="number">4</span></td>
+                        <td>4</td>
                         <td>0</td>
                         <td>0%</td>
-                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20MELCOR%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20TICORP%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues →</a></td>
                     </tr>
 
                 </tbody>
@@ -510,7 +728,7 @@
         
         <!-- Issues sem Due Date -->
         <div class="section">
-            <div class="section-title">âš ï¸ Issues sem Due Date ({no_duedate_total} no total)</div>
+            <div class="section-title">⚠️ Issues sem Due Date ({no_duedate_total} no total)</div>
             <table>
                 <thead>
                     <tr>
@@ -524,31 +742,31 @@
                     <tr>
                         <td class="squad-name">HCM</td>
                         <td><span class="number">5</span></td>
-                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20HCM%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20duedate%20is%20EMPTY%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20HCM%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20duedate%20is%20EMPTY%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues →</a></td>
                     </tr>
 
                     <tr>
                         <td class="squad-name">GEL</td>
                         <td><span class="number">3</span></td>
-                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20GEL%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20duedate%20is%20EMPTY%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues â†’</a></td>
+                        <td><a href="https://picpay.atlassian.net/issues/?jql=project%20%3D%20GEL%20AND%20(parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22))%20AND%20duedate%20is%20EMPTY%20AND%20status%20NOT%20IN%20(Done%2C%20Cancelled)" target="_blank" class="link">Ver issues →</a></td>
                     </tr>
 
                 </tbody>
             </table>
             <div style="margin-top: 1rem; color: #6b7280; font-size: 0.9rem;">
-                ðŸ’¡ <strong>AÃ§Ã£o requerida:</strong> Agendar revisÃ£o com os squads para definir datas realistas.
+                💡 <strong>Ação requerida:</strong> Agendar revisão com os squads para definir datas realistas.
             </div>
         </div>
         
         <!-- Burndown -->
         <div class="section">
-            <div class="section-title">ðŸ“ˆ Burndown - Ãšltimos 6 Meses</div>
+            <div class="section-title">📈 Burndown - Últimos 6 Meses</div>
             <div class="chart bar-chart">
 
                 <div class="bar-item">
                     <div class="bar-label">Oct/25</div>
                     <div class="bar">
-                        <div class="bar-fill" style="width: 42.857142857142854%">9</div>
+                        <div class="bar-fill" style="width: 47.61904761904761%">10</div>
                     </div>
                 </div>
 
@@ -569,7 +787,7 @@
                 <div class="bar-item">
                     <div class="bar-label">Jan/26</div>
                     <div class="bar">
-                        <div class="bar-fill" style="width: 47.61904761904761%">10</div>
+                        <div class="bar-fill" style="width: 52.38095238095239%">11</div>
                     </div>
                 </div>
 
@@ -592,7 +810,7 @@
         
         <!-- Replanejamentos -->
         <div class="section">
-            <div class="section-title">ðŸ”„ Replanejamentos CrÃ­ticos</div>
+            <div class="section-title">🔄 Replanejamentos Críticos</div>
             <table>
                 <thead>
                     <tr>
@@ -607,34 +825,295 @@
                     <tr>
                         <td class="squad-name">COMFA-702</td>
                         <td><span class="badge danger">4x</span></td>
-                        <td>Dez/25 â†’ Jun/26 (+5 meses)</td>
-                        <td><a href="https://picpay.atlassian.net/browse/COMFA-702" target="_blank" class="link">Ver issue â†’</a></td>
+                        <td>Dez/25 → Jun/26 (+5 meses)</td>
+                        <td><a href="https://picpay.atlassian.net/browse/COMFA-702" target="_blank" class="link">Ver issue →</a></td>
                     </tr>
 
                     <tr>
                         <td class="squad-name">COMFA-698</td>
                         <td><span class="badge warning">2x</span></td>
-                        <td>Fev/26 â†’ Jun/26 (+3 meses)</td>
-                        <td><a href="https://picpay.atlassian.net/browse/COMFA-698" target="_blank" class="link">Ver issue â†’</a></td>
+                        <td>Fev/26 → Jun/26 (+3 meses)</td>
+                        <td><a href="https://picpay.atlassian.net/browse/COMFA-698" target="_blank" class="link">Ver issue →</a></td>
                     </tr>
 
                     <tr>
                         <td class="squad-name">HCM-788</td>
                         <td><span class="badge warning">2x</span></td>
-                        <td>Jan/26 â†’ Abr/26 (+2.5 meses)</td>
-                        <td><a href="https://picpay.atlassian.net/browse/HCM-788" target="_blank" class="link">Ver issue â†’</a></td>
+                        <td>Jan/26 → Abr/26 (+2.5 meses)</td>
+                        <td><a href="https://picpay.atlassian.net/browse/HCM-788" target="_blank" class="link">Ver issue →</a></td>
                     </tr>
 
                 </tbody>
             </table>
             <div style="margin-top: 1rem; color: #6b7280; font-size: 0.9rem;">
-                ðŸ’¡ <strong>AÃ§Ã£o requerida:</strong> Revisar impedimentos e dependÃªncias dessas issues.
+                💡 <strong>Ação requerida:</strong> Revisar impedimentos e dependências dessas issues.
+            </div>
+        </div>
+        
+        <!-- Issues Bloqueadas -->
+        <div class="section">
+            <div class="section-title">🚫 Issues Bloqueadas (Flagged)</div>
+
+            <div style="text-align: center; padding: 40px; color: #6b7280;">
+                🎉 Nenhuma issue bloqueada no momento!
+            </div>
+
+        </div>
+        
+        <!-- Distribuição por Squad -->
+        <div class="section">
+            <div class="section-title">🏢 Distribuição por Squad</div>
+            <div style="margin-bottom: 20px; color: #64748b; font-size: 0.95rem;">
+                Visão consolidada da hierarquia de issues por squad — identifique gargalos e acompanhe evolução
+            </div>
+            <div class="squad-distribution">
+
+                <div class="squad-card" onclick="window.open('https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20project%20%3D%20PLD', '_blank')" style="border-left-color: #21C25E;">
+                    <div class="squad-header">
+                        <div class="squad-name">PLD</div>
+                        <div class="squad-total">43</div>
+                    </div>
+                    <div class="squad-breakdown">
+                        <div class="squad-stat done">
+                            <div class="squad-stat-value">41</div>
+                            <div class="squad-stat-label">✅ Done</div>
+                        </div>
+                        <div class="squad-stat pending">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">⏳ Pendentes</div>
+                        </div>
+                        <div class="squad-stat cancelled">
+                            <div class="squad-stat-value">2</div>
+                            <div class="squad-stat-label">❌ Canceladas</div>
+                        </div>
+                    </div>
+                    <div class="squad-progress">
+                        <div class="squad-progress-label">
+                            <span>Progresso</span>
+                            <span>95%</span>
+                        </div>
+                        <div class="squad-progress-bar">
+                            <div class="squad-progress-fill" style="width: 95%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="squad-card" onclick="window.open('https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20project%20%3D%20COMFA', '_blank')" style="border-left-color: #f59e0b;">
+                    <div class="squad-header">
+                        <div class="squad-name">COMFA</div>
+                        <div class="squad-total">31</div>
+                    </div>
+                    <div class="squad-breakdown">
+                        <div class="squad-stat done">
+                            <div class="squad-stat-value">23</div>
+                            <div class="squad-stat-label">✅ Done</div>
+                        </div>
+                        <div class="squad-stat pending">
+                            <div class="squad-stat-value">8</div>
+                            <div class="squad-stat-label">⏳ Pendentes</div>
+                        </div>
+                        <div class="squad-stat cancelled">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">❌ Canceladas</div>
+                        </div>
+                    </div>
+                    <div class="squad-progress">
+                        <div class="squad-progress-label">
+                            <span>Progresso</span>
+                            <span>74%</span>
+                        </div>
+                        <div class="squad-progress-bar">
+                            <div class="squad-progress-fill" style="width: 74%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="squad-card" onclick="window.open('https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20project%20%3D%20HCM', '_blank')" style="border-left-color: #ef4444;">
+                    <div class="squad-header">
+                        <div class="squad-name">HCM</div>
+                        <div class="squad-total">12</div>
+                    </div>
+                    <div class="squad-breakdown">
+                        <div class="squad-stat done">
+                            <div class="squad-stat-value">5</div>
+                            <div class="squad-stat-label">✅ Done</div>
+                        </div>
+                        <div class="squad-stat pending">
+                            <div class="squad-stat-value">7</div>
+                            <div class="squad-stat-label">⏳ Pendentes</div>
+                        </div>
+                        <div class="squad-stat cancelled">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">❌ Canceladas</div>
+                        </div>
+                    </div>
+                    <div class="squad-progress">
+                        <div class="squad-progress-label">
+                            <span>Progresso</span>
+                            <span>42%</span>
+                        </div>
+                        <div class="squad-progress-bar">
+                            <div class="squad-progress-fill" style="width: 42%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="squad-card" onclick="window.open('https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20project%20%3D%20GEL', '_blank')" style="border-left-color: #f59e0b;">
+                    <div class="squad-header">
+                        <div class="squad-name">GEL</div>
+                        <div class="squad-total">11</div>
+                    </div>
+                    <div class="squad-breakdown">
+                        <div class="squad-stat done">
+                            <div class="squad-stat-value">7</div>
+                            <div class="squad-stat-label">✅ Done</div>
+                        </div>
+                        <div class="squad-stat pending">
+                            <div class="squad-stat-value">4</div>
+                            <div class="squad-stat-label">⏳ Pendentes</div>
+                        </div>
+                        <div class="squad-stat cancelled">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">❌ Canceladas</div>
+                        </div>
+                    </div>
+                    <div class="squad-progress">
+                        <div class="squad-progress-label">
+                            <span>Progresso</span>
+                            <span>64%</span>
+                        </div>
+                        <div class="squad-progress-bar">
+                            <div class="squad-progress-fill" style="width: 64%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="squad-card" onclick="window.open('https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20project%20%3D%20CFERP', '_blank')" style="border-left-color: #ef4444;">
+                    <div class="squad-header">
+                        <div class="squad-name">CFERP</div>
+                        <div class="squad-total">5</div>
+                    </div>
+                    <div class="squad-breakdown">
+                        <div class="squad-stat done">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">✅ Done</div>
+                        </div>
+                        <div class="squad-stat pending">
+                            <div class="squad-stat-value">5</div>
+                            <div class="squad-stat-label">⏳ Pendentes</div>
+                        </div>
+                        <div class="squad-stat cancelled">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">❌ Canceladas</div>
+                        </div>
+                    </div>
+                    <div class="squad-progress">
+                        <div class="squad-progress-label">
+                            <span>Progresso</span>
+                            <span>0%</span>
+                        </div>
+                        <div class="squad-progress-bar">
+                            <div class="squad-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="squad-card" onclick="window.open('https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20project%20%3D%20TICORP', '_blank')" style="border-left-color: #ef4444;">
+                    <div class="squad-header">
+                        <div class="squad-name">TICORP</div>
+                        <div class="squad-total">4</div>
+                    </div>
+                    <div class="squad-breakdown">
+                        <div class="squad-stat done">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">✅ Done</div>
+                        </div>
+                        <div class="squad-stat pending">
+                            <div class="squad-stat-value">4</div>
+                            <div class="squad-stat-label">⏳ Pendentes</div>
+                        </div>
+                        <div class="squad-stat cancelled">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">❌ Canceladas</div>
+                        </div>
+                    </div>
+                    <div class="squad-progress">
+                        <div class="squad-progress-label">
+                            <span>Progresso</span>
+                            <span>0%</span>
+                        </div>
+                        <div class="squad-progress-bar">
+                            <div class="squad-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="squad-card" onclick="window.open('https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20project%20%3D%20MELCOR', '_blank')" style="border-left-color: #ef4444;">
+                    <div class="squad-header">
+                        <div class="squad-name">MELCOR</div>
+                        <div class="squad-total">1</div>
+                    </div>
+                    <div class="squad-breakdown">
+                        <div class="squad-stat done">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">✅ Done</div>
+                        </div>
+                        <div class="squad-stat pending">
+                            <div class="squad-stat-value">1</div>
+                            <div class="squad-stat-label">⏳ Pendentes</div>
+                        </div>
+                        <div class="squad-stat cancelled">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">❌ Canceladas</div>
+                        </div>
+                    </div>
+                    <div class="squad-progress">
+                        <div class="squad-progress-label">
+                            <span>Progresso</span>
+                            <span>0%</span>
+                        </div>
+                        <div class="squad-progress-bar">
+                            <div class="squad-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="squad-card" onclick="window.open('https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20project%20%3D%20EFCONT', '_blank')" style="border-left-color: #ef4444;">
+                    <div class="squad-header">
+                        <div class="squad-name">EFCONT</div>
+                        <div class="squad-total">1</div>
+                    </div>
+                    <div class="squad-breakdown">
+                        <div class="squad-stat done">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">✅ Done</div>
+                        </div>
+                        <div class="squad-stat pending">
+                            <div class="squad-stat-value">1</div>
+                            <div class="squad-stat-label">⏳ Pendentes</div>
+                        </div>
+                        <div class="squad-stat cancelled">
+                            <div class="squad-stat-value">0</div>
+                            <div class="squad-stat-label">❌ Canceladas</div>
+                        </div>
+                    </div>
+                    <div class="squad-progress">
+                        <div class="squad-progress-label">
+                            <span>Progresso</span>
+                            <span>0%</span>
+                        </div>
+                        <div class="squad-progress-bar">
+                            <div class="squad-progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
         
         <footer>
             Dashboard gerado automaticamente via GitHub Actions<br>
-            Dados atualizados diariamente Ã s 08h (horÃ¡rio de BrasÃ­lia)
+            Dados atualizados diariamente às 08h (horário de Brasília)
         </footer>
     </div>
 </body>
