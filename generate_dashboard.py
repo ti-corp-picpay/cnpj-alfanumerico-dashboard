@@ -110,8 +110,11 @@ def analyze_data():
     
     print("ðŸ” Buscando todas as issues da iniciativa CPTECHC-491...", flush=True)
     
+    # JQL EXATO conforme especificado (com ORDER BY para paginaÃ§Ã£o consistente)
+    jql = 'parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491") ORDER BY project ASC, statusCategory ASC, updated DESC'
+    
     try:
-        all_issues = fetch_issues('parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491")')
+        all_issues = fetch_issues(jql)
     except Exception as e:
         print(f"âŒ Erro ao buscar issues: {e}", flush=True)
         raise
