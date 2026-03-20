@@ -24,8 +24,8 @@ def get_jira_auth():
     encoded = base64.b64encode(credentials.encode()).decode()
     return {'Authorization': f'Basic {encoded}'}
 
-def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created'):
-    """Busca issues do Jira com paginaÃ§Ã£o"""
+def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021'):
+    """Busca issues do Jira com paginaÃ§Ã£o (customfield_10021 = Flagged)"""
     url = f"{JIRA_BASE_URL}/rest/api/2/search/jql"
     all_issues = []
     seen_keys = set()  # Para detectar duplicatas
@@ -163,6 +163,30 @@ def analyze_data():
             month_key = date.strftime('%Y-%m')
             burndown[month_key] += 1
     
+    # Issues com Flag (bloqueadas/impedidas)
+    flagged = []
+    for issue in all_issues:
+        # Flag pode estar em customfield_10021 ou flagged
+        flag_field = issue['fields'].get('customfield_10021') or issue['fields'].get('flagged')
+        if flag_field:
+            # Flag pode ser um array ou objeto
+            has_flag = False
+            if isinstance(flag_field, list) and len(flag_field) > 0:
+                has_flag = True
+            elif isinstance(flag_field, dict) and flag_field.get('value'):
+                has_flag = True
+            elif isinstance(flag_field, str) and flag_field:
+                has_flag = True
+            
+            if has_flag:
+                flagged.append({
+                    'key': issue['key'],
+                    'summary': issue['fields']['summary'],
+                    'status': issue['fields']['status']['name'],
+                    'squad': issue['fields']['project']['key'],
+                    'priority': issue['fields'].get('priority', {}).get('name', 'Sem prioridade') if issue['fields'].get('priority') else 'Sem prioridade'
+                })
+    
     # Replanejamentos (lista manual, seria ideal buscar do changelog)
     replanned = [
         {'key': 'COMFA-702', 'times': 4, 'info': 'Dez/25 â†’ Jun/26 (+5 meses)'},
@@ -187,6 +211,7 @@ def analyze_data():
         'squad_done': dict(squad_done),
         'burndown': dict(sorted(burndown.items())),
         'replanned': replanned,
+        'flagged': flagged,
         'generated_at': datetime.now().isoformat()
     }
 
