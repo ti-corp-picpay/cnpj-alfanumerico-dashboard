@@ -217,8 +217,22 @@ def generate_html(data, risk):
         }}
         
         .risk-icon {{
-            font-size: 2rem;
+            font-size: 2.5rem;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }}
+        
+        .risk-icon.success {{ background: #D1FAE5; color: #21C25E; }}
+        .risk-icon.warning {{ background: #FEF3C7; color: #F59E0B; }}
+        .risk-icon.danger {{ background: #FEE2E2; color: #EF4444; }}
+        
+        .risk-icon.success::before {{ content: '✓'; }}
+        .risk-icon.warning::before {{ content: '⚠'; }}
+        .risk-icon.danger::before {{ content: '✕'; }}
         
         .risk-title {{
             font-size: 1.1rem;
@@ -663,7 +677,7 @@ def generate_html(data, risk):
         <div class="risk-grid">
             <div class="risk-card {risk['deadline']['color']}">
                 <div class="risk-header">
-                    <span class="risk-icon">{risk['deadline']['icon']}</span>
+                    <span class="risk-icon {risk['deadline']['color']}"></span>
                     <div>
                         <div class="risk-title">Risco de Prazo</div>
                         <div class="risk-level {risk['deadline']['color']}">{risk['deadline']['level']}</div>
@@ -678,7 +692,7 @@ def generate_html(data, risk):
             
             <div class="risk-card {risk['operational']['color']}">
                 <div class="risk-header">
-                    <span class="risk-icon">{risk['operational']['icon']}</span>
+                    <span class="risk-icon {risk['operational']['color']}"></span>
                     <div>
                         <div class="risk-title">Risco Operacional</div>
                         <div class="risk-level {risk['operational']['color']}">{risk['operational']['level']}</div>

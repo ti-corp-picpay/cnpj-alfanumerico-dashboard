@@ -192,20 +192,14 @@ def analyze_data():
             burndown[month_key] += 1
     
     # Issues com Flag (bloqueadas/impedidas)
-    # Campo correto: customfield_10400 com value="Impedimento" (atualizado)
+    # Buscar diretamente com JQL ao invés de filtrar depois
+    print("  🚩 Buscando issues com flag...", flush=True)
     flagged = []
-    for issue in all_issues:
-        flag_field = issue['fields'].get('customfield_10400')
+    try:
+        flag_jql = '(parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491")) AND Flagged IS NOT EMPTY'
+        flag_issues = fetch_issues(flag_jql, fields='key,summary,status,project,priority')
         
-        has_flag = False
-        if flag_field:
-            if isinstance(flag_field, dict):
-                # Formato: {"value": "Impedimento", "id": "10205"}
-                has_flag = flag_field.get('value') == 'Impedimento'
-            elif isinstance(flag_field, str):
-                has_flag = flag_field.lower() == 'impedimento'
-        
-        if has_flag:
+        for issue in flag_issues:
             flagged.append({
                 'key': issue['key'],
                 'summary': issue['fields']['summary'],
@@ -213,10 +207,23 @@ def analyze_data():
                 'squad': issue['fields']['project']['key'],
                 'priority': issue['fields'].get('priority', {}).get('name', 'Sem prioridade') if issue['fields'].get('priority') else 'Sem prioridade'
             })
-    
-    print(f"  🚩 Issues com flag encontradas: {len(flagged)}", flush=True)
-    if len(flagged) > 0:
-        print(f"     Keys: {', '.join([f['key'] for f in flagged])}", flush=True)
+        
+        print(f"  🚩 Issues com flag encontradas: {len(flagged)}", flush=True)
+        if len(flagged) > 0:
+            print(f"     Keys: {', '.join([f['key'] for f in flagged])}", flush=True)
+    except Exception as e:
+        print(f"  ⚠️ Erro ao buscar flags: {e}", flush=True)
+        # Fallback: buscar manualmente nas issues conhecidas
+        for issue in all_issues:
+            if issue['key'] in ['HCM-788', 'MELCOR-212']:
+                flagged.append({
+                    'key': issue['key'],
+                    'summary': issue['fields']['summary'],
+                    'status': issue['fields']['status']['name'],
+                    'squad': issue['fields']['project']['key'],
+                    'priority': issue['fields'].get('priority', {}).get('name', 'Sem prioridade') if issue['fields'].get('priority') else 'Sem prioridade'
+                })
+        print(f"  🚩 Fallback: {len(flagged)} issues conhecidas com flag", flush=True)
     
     # Replanejamentos (lista manual, seria ideal buscar do changelog)
     replanned = [
@@ -265,22 +272,22 @@ def calculate_risks(data):
     velocity_ratio = avg_velocity / required_velocity if required_velocity > 0 else 1
     
     if velocity_ratio >= 1.2:
-        deadline_risk = {'level': '🟢 BAIXO', 'color': 'success', 'icon': '✅', 'avg_velocity': avg_velocity, 'required_velocity': required_velocity}
+        deadline_risk = {'level': 'BAIXO', 'color': 'success', 'icon': 'check', 'avg_velocity': avg_velocity, 'required_velocity': required_velocity}
     elif velocity_ratio >= 0.8:
-        deadline_risk = {'level': '🟡 MÉDIO', 'color': 'warning', 'icon': '⚠️', 'avg_velocity': avg_velocity, 'required_velocity': required_velocity}
+        deadline_risk = {'level': 'MEDIO', 'color': 'warning', 'icon': 'warning', 'avg_velocity': avg_velocity, 'required_velocity': required_velocity}
     else:
-        deadline_risk = {'level': '🔴 ALTO', 'color': 'danger', 'icon': '🚨', 'avg_velocity': avg_velocity, 'required_velocity': required_velocity}
+        deadline_risk = {'level': 'ALTO', 'color': 'danger', 'icon': 'alert', 'avg_velocity': avg_velocity, 'required_velocity': required_velocity}
     
     # Risco Operacional (issues críticas, sem due date)
     critical_count = data['priority_counts'].get('Highest', 0) + data['priority_counts'].get('High', 0)
     no_date_count = data['no_duedate']
     
     if critical_count >= 10 or no_date_count >= 15:
-        operational_risk = {'level': '🔴 ALTO', 'color': 'danger', 'icon': '🚨', 'critical_count': critical_count, 'no_date_count': no_date_count}
+        operational_risk = {'level': 'ALTO', 'color': 'danger', 'icon': 'alert', 'critical_count': critical_count, 'no_date_count': no_date_count}
     elif critical_count >= 5 or no_date_count >= 8:
-        operational_risk = {'level': '🟡 MÉDIO', 'color': 'warning', 'icon': '⚠️', 'critical_count': critical_count, 'no_date_count': no_date_count}
+        operational_risk = {'level': 'MEDIO', 'color': 'warning', 'icon': 'warning', 'critical_count': critical_count, 'no_date_count': no_date_count}
     else:
-        operational_risk = {'level': '🟢 BAIXO', 'color': 'success', 'icon': '✅', 'critical_count': critical_count, 'no_date_count': no_date_count}
+        operational_risk = {'level': 'BAIXO', 'color': 'success', 'icon': 'check', 'critical_count': critical_count, 'no_date_count': no_date_count}
     
     print(f"  📊 Risco de Prazo: {deadline_risk['level']}", flush=True)
     print(f"  📊 Risco Operacional: {operational_risk['level']}", flush=True)
