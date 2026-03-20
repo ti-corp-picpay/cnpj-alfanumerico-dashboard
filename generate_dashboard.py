@@ -24,8 +24,8 @@ def get_jira_auth():
     encoded = base64.b64encode(credentials.encode()).decode()
     return {'Authorization': f'Basic {encoded}'}
 
-def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021'):
-    """Busca issues do Jira com paginaÃ§Ã£o (customfield_10021 = Flagged)"""
+def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021,flagged'):
+    """Busca issues do Jira com paginaÃ§Ã£o (flagged = campo de Flag)"""
     # Usar o endpoint antigo que funciona
     url = f"{JIRA_BASE_URL}/rest/api/2/search/jql"
     all_issues = []
@@ -179,26 +179,47 @@ def analyze_data():
     # Issues com Flag (bloqueadas/impedidas)
     flagged = []
     for issue in all_issues:
-        # Flag pode estar em customfield_10021 ou flagged
-        flag_field = issue['fields'].get('customfield_10021') or issue['fields'].get('flagged')
+        # Flag pode estar em vÃ¡rios campos possÃ­veis
+        flag_field = (
+            issue['fields'].get('customfield_10021') or  # Campo comum de Flag
+            issue['fields'].get('flagged') or
+            issue['fields'].get('customfield_10000') or
+            issue['fields'].get('impediment')
+        )
+        
+        # Debug: imprimir campos disponÃ­veis da primeira issue
+        if len(flagged) == 0 and len(all_issues) > 0:
+            print(f"  ðŸ” Campos disponÃ­veis na issue {issue['key']}: {', '.join(issue['fields'].keys())}", flush=True)
+        
+        has_flag = False
+        
+        # Verificar diferentes formatos de flag
         if flag_field:
-            # Flag pode ser um array ou objeto
-            has_flag = False
-            if isinstance(flag_field, list) and len(flag_field) > 0:
-                has_flag = True
-            elif isinstance(flag_field, dict) and flag_field.get('value'):
-                has_flag = True
-            elif isinstance(flag_field, str) and flag_field:
-                has_flag = True
-            
-            if has_flag:
-                flagged.append({
-                    'key': issue['key'],
-                    'summary': issue['fields']['summary'],
-                    'status': issue['fields']['status']['name'],
-                    'squad': issue['fields']['project']['key'],
-                    'priority': issue['fields'].get('priority', {}).get('name', 'Sem prioridade') if issue['fields'].get('priority') else 'Sem prioridade'
-                })
+            if isinstance(flag_field, list):
+                # Lista de objetos (ex: [{"value": "Impediment"}])
+                has_flag = len(flag_field) > 0
+            elif isinstance(flag_field, dict):
+                # Objeto (ex: {"value": "Impediment"})
+                has_flag = bool(flag_field.get('value'))
+            elif isinstance(flag_field, str):
+                # String direta
+                has_flag = len(flag_field) > 0
+            elif isinstance(flag_field, bool):
+                # Boolean
+                has_flag = flag_field
+        
+        if has_flag:
+            flagged.append({
+                'key': issue['key'],
+                'summary': issue['fields']['summary'],
+                'status': issue['fields']['status']['name'],
+                'squad': issue['fields']['project']['key'],
+                'priority': issue['fields'].get('priority', {}).get('name', 'Sem prioridade') if issue['fields'].get('priority') else 'Sem prioridade'
+            })
+    
+    print(f"  ðŸš© Issues com flag encontradas: {len(flagged)}", flush=True)
+    if len(flagged) > 0:
+        print(f"     Keys: {', '.join([f['key'] for f in flagged])}", flush=True)
     
     # Replanejamentos (lista manual, seria ideal buscar do changelog)
     replanned = [
