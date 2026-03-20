@@ -669,7 +669,11 @@ def generate_html(data, risk):
                     <span class="tooltip" data-tooltip="Scope creep: issues criadas após 31/12/2025">Inject (Scope Creep)</span>
                 </div>
                 <div class="kpi-value" style="color: #EF4444;">{data['inject']}</div>
-                <div class="kpi-detail">+{inject_pct}% vs baseline ({data['baseline']})</div>
+                <div class="kpi-detail">
+                    +{inject_pct}% vs baseline ({data['baseline']})
+                    <br>
+                    <a href="https://picpay.atlassian.net/issues/?jql=parent%20%3D%20CPTECHC-491%20OR%20parent%20IN%20portfolioChildIssuesOf(%22CPTECHC-491%22)%20AND%20created%20%3E%3D%202026-01-01" target="_blank" class="link">Ver inject →</a>
+                </div>
             </div>
         </div>
         
@@ -748,7 +752,7 @@ def generate_html(data, risk):
         
         <!-- Issues sem Due Date -->
         <div class="section">
-            <div class="section-title">⚠️ Issues sem Due Date ({no_duedate_total} no total)</div>
+            <div class="section-title">⚠️ Issues sem Due Date ({data['no_duedate']} no total)</div>
             <table>
                 <thead>
                     <tr>
