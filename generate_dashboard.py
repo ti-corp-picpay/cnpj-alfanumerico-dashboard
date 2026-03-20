@@ -26,23 +26,26 @@ def get_jira_auth():
 
 def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021'):
     """Busca issues do Jira com paginaÃ§Ã£o (customfield_10021 = Flagged)"""
-    url = f"{JIRA_BASE_URL}/rest/api/3/search"  # API v3
+    # Usar o endpoint antigo que funciona
+    url = f"{JIRA_BASE_URL}/rest/api/2/search/jql"
     all_issues = []
     seen_keys = set()
     
     params = {
         'jql': jql,
         'fields': fields,
-        'maxResults': 100,
-        'startAt': 0
+        'maxResults': 100
     }
     
     headers = get_jira_auth()
     headers['Content-Type'] = 'application/json'
     
+    print(f"  ðŸ” Endpoint: {url}", flush=True)
+    print(f"  ðŸ“ JQL: {jql}", flush=True)
+    
     page = 1
     while True:
-        print(f"  ðŸ“„ Buscando pÃ¡gina {page} (startAt={params['startAt']})...", flush=True)
+        print(f"  ðŸ“„ Buscando pÃ¡gina {page}...", flush=True)
         try:
             response = requests.get(url, params=params, headers=headers, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
@@ -52,12 +55,10 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
             continue
         except requests.exceptions.RequestException as e:
             print(f"  âŒ Erro na requisiÃ§Ã£o: {e}", flush=True)
+            print(f"  ðŸ” Response status: {response.status_code if 'response' in locals() else 'N/A'}", flush=True)
             raise
         
-        total = data.get('total', 0)
         issues_count = len(data.get('issues', []))
-        
-        print(f"  ðŸ“Š Total no Jira: {total} | Retornadas nesta pÃ¡gina: {issues_count}", flush=True)
         
         if issues_count == 0:
             print(f"  ðŸ Nenhuma issue retornada, finalizando", flush=True)
@@ -72,28 +73,36 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
                 all_issues.append(issue)
                 new_issues += 1
         
-        print(f"  âœ… {new_issues} novas issues (total Ãºnico: {len(all_issues)} de {total})", flush=True)
-        
-        # Se coletamos tudo, parar
-        if len(all_issues) >= total:
-            print(f"  ðŸ Todas as {total} issues coletadas!", flush=True)
-            break
+        print(f"  âœ… {issues_count} issues retornadas, {new_issues} novas (total Ãºnico: {len(all_issues)})", flush=True)
         
         # Se nÃ£o vieram issues novas, parar
         if new_issues == 0:
             print(f"  ðŸ Apenas duplicatas, finalizando", flush=True)
             break
         
-        # PrÃ³xima pÃ¡gina
-        params['startAt'] += issues_count
-        page += 1
+        # Verificar se tem mais pÃ¡ginas
+        is_last = data.get('isLast', True)
+        has_next_token = 'nextPageToken' in data
         
-        # Limite de seguranÃ§a
+        print(f"  ðŸ” isLast={is_last}, hasNextToken={has_next_token}", flush=True)
+        
+        if is_last and not has_next_token:
+            print(f"  ðŸ Ãšltima pÃ¡gina alcanÃ§ada", flush=True)
+            break
+        
+        if has_next_token:
+            params['pageToken'] = data['nextPageToken']
+            page += 1
+        else:
+            print(f"  ðŸ Sem nextPageToken, finalizando", flush=True)
+            break
+        
         if page > 10:
             print(f"  âš ï¸ Limite de 10 pÃ¡ginas atingido", flush=True)
             break
     
     print(f"  ðŸ“‹ Total coletado: {len(all_issues)} issues Ãºnicas", flush=True)
+    print(f"  ðŸ”‘ Keys: {', '.join(sorted(seen_keys)[:20])}{'...' if len(seen_keys) > 20 else ''}", flush=True)
     return all_issues
 
 def analyze_data():
