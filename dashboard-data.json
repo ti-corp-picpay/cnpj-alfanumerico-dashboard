@@ -1,54 +1,56 @@
 {
   "data": {
-    "total": 100,
-    "done": 74,
-    "in_progress": 20,
-    "backlog": 4,
+    "total": 108,
+    "done": 76,
+    "in_progress": 23,
+    "backlog": 7,
     "cancelled": 2,
-    "pending": 24,
-    "baseline": 55,
-    "inject": 45,
+    "pending": 30,
+    "baseline": 62,
+    "inject": 46,
     "no_duedate": 8,
     "no_duedate_by_squad": {
       "HCM": 5,
       "GEL": 3
     },
     "priority_counts": {
-      "Critical": 12,
-      "High": 2,
-      "Low": 5,
+      "Critical": 15,
+      "Médio": 3,
+      "Low": 8,
       "Média": 2,
-      "Médio": 3
+      "High": 2
     },
     "squad_pending": {
+      "COMFA": 8,
       "HCM": 7,
-      "COMFA": 7,
-      "TICORP": 4,
+      "CFERP": 5,
       "GEL": 4,
+      "TICORP": 4,
       "MELCOR": 1,
       "EFCONT": 1
     },
     "squad_total": {
-      "TICORP": 4,
       "PLD": 43,
-      "MELCOR": 1,
+      "COMFA": 31,
       "HCM": 12,
       "GEL": 11,
+      "TICORP": 4,
+      "MELCOR": 1,
       "EFCONT": 1,
-      "COMFA": 28
+      "CFERP": 5
     },
     "squad_done": {
       "PLD": 41,
+      "COMFA": 23,
       "HCM": 5,
-      "GEL": 7,
-      "COMFA": 21
+      "GEL": 7
     },
     "burndown": {
       "2025-09": 12,
-      "2025-10": 9,
+      "2025-10": 10,
       "2025-11": 2,
       "2025-12": 1,
-      "2026-01": 10,
+      "2026-01": 11,
       "2026-02": 19,
       "2026-03": 21
     },
@@ -56,35 +58,35 @@
       {
         "key": "COMFA-702",
         "times": 4,
-        "info": "Dez/25 â†’ Jun/26 (+5 meses)"
+        "info": "Dez/25 → Jun/26 (+5 meses)"
       },
       {
         "key": "COMFA-698",
         "times": 2,
-        "info": "Fev/26 â†’ Jun/26 (+3 meses)"
+        "info": "Fev/26 → Jun/26 (+3 meses)"
       },
       {
         "key": "HCM-788",
         "times": 2,
-        "info": "Jan/26 â†’ Abr/26 (+2.5 meses)"
+        "info": "Jan/26 → Abr/26 (+2.5 meses)"
       }
     ],
     "flagged": [],
-    "generated_at": "2026-03-20T15:13:43.479564"
+    "generated_at": "2026-03-20T19:37:08.903195"
   },
   "risk": {
     "deadline": {
       "level": "BAIXO",
       "color": "success",
-      "icon": "ðŸŸ¢",
-      "avg_velocity": 16.666666666666668,
-      "required_velocity": 8.0
+      "icon": "🟢",
+      "avg_velocity": 17.0,
+      "required_velocity": 10.0
     },
     "operational": {
-      "level": "MÃ‰DIO",
-      "color": "warning",
-      "icon": "ðŸŸ¡",
-      "critical_count": 12,
+      "level": "ALTO",
+      "color": "danger",
+      "icon": "🔴",
+      "critical_count": 15,
       "no_date_count": 8
     }
   }
