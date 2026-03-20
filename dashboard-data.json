@@ -1,22 +1,23 @@
 {
   "data": {
-    "total": 108,
+    "total": 109,
     "done": 76,
-    "in_progress": 23,
-    "backlog": 7,
+    "in_progress": 25,
+    "backlog": 6,
     "cancelled": 2,
-    "pending": 30,
+    "pending": 31,
     "baseline": 62,
-    "inject": 46,
-    "no_duedate": 8,
+    "inject": 47,
+    "no_duedate": 9,
     "no_duedate_by_squad": {
       "HCM": 5,
-      "GEL": 3
+      "GEL": 3,
+      "MELCOR": 1
     },
     "priority_counts": {
       "Critical": 15,
       "Médio": 3,
-      "Low": 8,
+      "Low": 9,
       "Média": 2,
       "High": 2
     },
@@ -26,7 +27,7 @@
       "CFERP": 5,
       "GEL": 4,
       "TICORP": 4,
-      "MELCOR": 1,
+      "MELCOR": 2,
       "EFCONT": 1
     },
     "squad_total": {
@@ -35,7 +36,7 @@
       "HCM": 12,
       "GEL": 11,
       "TICORP": 4,
-      "MELCOR": 1,
+      "MELCOR": 2,
       "EFCONT": 1,
       "CFERP": 5
     },
@@ -72,7 +73,7 @@
       }
     ],
     "flagged": [],
-    "generated_at": "2026-03-20T19:37:08.903195"
+    "generated_at": "2026-03-20T20:13:39.861585"
   },
   "risk": {
     "deadline": {
@@ -80,14 +81,14 @@
       "color": "success",
       "icon": "🟢",
       "avg_velocity": 17.0,
-      "required_velocity": 10.0
+      "required_velocity": 10.333333333333334
     },
     "operational": {
       "level": "ALTO",
       "color": "danger",
       "icon": "🔴",
       "critical_count": 15,
-      "no_date_count": 8
+      "no_date_count": 9
     }
   }
 }
