@@ -28,6 +28,7 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
     """Busca issues do Jira com paginaÃ§Ã£o"""
     url = f"{JIRA_BASE_URL}/rest/api/2/search/jql"
     all_issues = []
+    seen_keys = set()  # Para detectar duplicatas
     
     params = {
         'jql': jql,
@@ -53,8 +54,27 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
             raise
         
         issues_count = len(data.get('issues', []))
-        all_issues.extend(data['issues'])
-        print(f"  âœ… {issues_count} issues retornadas (total: {len(all_issues)})", flush=True)
+        
+        # Verificar se nÃ£o vieram issues novas
+        if issues_count == 0:
+            print(f"  ðŸ Nenhuma issue retornada, finalizando", flush=True)
+            break
+        
+        # Adicionar apenas issues Ãºnicas (sem duplicatas)
+        new_issues = 0
+        for issue in data['issues']:
+            issue_key = issue['key']
+            if issue_key not in seen_keys:
+                seen_keys.add(issue_key)
+                all_issues.append(issue)
+                new_issues += 1
+        
+        print(f"  âœ… {issues_count} issues retornadas, {new_issues} novas (total Ãºnico: {len(all_issues)})", flush=True)
+        
+        # Se nÃ£o vieram issues novas, parar (API retornando duplicatas)
+        if new_issues == 0:
+            print(f"  ðŸ Apenas duplicatas retornadas, finalizando", flush=True)
+            break
         
         if data.get('isLast', True):
             print(f"  ðŸ Ãšltima pÃ¡gina alcanÃ§ada", flush=True)
@@ -68,9 +88,9 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
             print(f"  ðŸ Sem nextPageToken, finalizando", flush=True)
             break
         
-        # Limite de seguranÃ§a (mÃ¡ximo 20 pÃ¡ginas = 2000 issues)
-        if page > 20:
-            print(f"  âš ï¸ Limite de 20 pÃ¡ginas atingido, abortando", flush=True)
+        # Limite de seguranÃ§a (mÃ¡ximo 50 pÃ¡ginas)
+        if page > 50:
+            print(f"  âš ï¸ Limite de 50 pÃ¡ginas atingido, abortando", flush=True)
             break
     
     return all_issues
