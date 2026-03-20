@@ -2,16 +2,22 @@ name: Update Dashboard
 
 on:
   schedule:
-    # Roda todo dia Ã s 8h (horÃ¡rio de BrasÃ­lia = 11h UTC)
+    # Roda todo dia às 8h (horário de Brasília = 11h UTC)
     - cron: '0 11 * * *'
   workflow_dispatch: # Permite rodar manualmente
+
+# Permissões necessárias para GitHub Pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   update-dashboard:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout cÃ³digo
+    - name: Checkout código
       uses: actions/checkout@v4
     
     - name: Setup Python
@@ -19,7 +25,7 @@ jobs:
       with:
         python-version: '3.11'
     
-    - name: Instalar dependÃªncias
+    - name: Instalar dependências
       run: |
         pip install -r requirements.txt
     
@@ -30,10 +36,23 @@ jobs:
       run: |
         python generate_dashboard.py
     
-    - name: Commit e deploy
+    - name: Commit e push
       run: |
         git config user.name "GitHub Actions Bot"
         git config user.email "actions@github.com"
-        git add dashboard.html dashboard-data.json
-        git commit -m "chore: atualizar dashboard $(date +'%Y-%m-%d %H:%M')" || echo "Sem mudanÃ§as"
+        git add dashboard.html dashboard-data.json index.html
+        git commit -m "chore: atualizar dashboard $(date +'%Y-%m-%d %H:%M')" || echo "Sem mudanças"
         git push || echo "Nada para push"
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        publish_branch: gh-pages
+        enable_jekyll: false
+        keep_files: false
+        force_orphan: true
+        user_name: 'GitHub Actions Bot'
+        user_email: 'actions@github.com'
+        commit_message: 'Deploy dashboard atualizado'
