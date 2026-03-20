@@ -26,14 +26,14 @@ def get_jira_auth():
 
 def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021'):
     """Busca issues do Jira com paginaÃ§Ã£o (customfield_10021 = Flagged)"""
-    url = f"{JIRA_BASE_URL}/rest/api/2/search"  # Endpoint correto (nÃ£o /search/jql)
+    url = f"{JIRA_BASE_URL}/rest/api/3/search"  # API v3
     all_issues = []
     seen_keys = set()
     
     params = {
         'jql': jql,
         'fields': fields,
-        'maxResults': 200,
+        'maxResults': 100,
         'startAt': 0
     }
     
