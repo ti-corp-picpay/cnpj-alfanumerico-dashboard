@@ -26,14 +26,15 @@ def get_jira_auth():
 
 def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021'):
     """Busca issues do Jira com paginaÃ§Ã£o (customfield_10021 = Flagged)"""
-    url = f"{JIRA_BASE_URL}/rest/api/2/search/jql"
+    url = f"{JIRA_BASE_URL}/rest/api/2/search"  # Endpoint correto (nÃ£o /search/jql)
     all_issues = []
-    seen_keys = set()  # Para detectar duplicatas
+    seen_keys = set()
     
     params = {
         'jql': jql,
         'fields': fields,
-        'maxResults': 200  # Aumentar para pegar mais de uma vez
+        'maxResults': 200,
+        'startAt': 0
     }
     
     headers = get_jira_auth()
@@ -41,7 +42,7 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
     
     page = 1
     while True:
-        print(f"  ðŸ“„ Buscando pÃ¡gina {page}...", flush=True)
+        print(f"  ðŸ“„ Buscando pÃ¡gina {page} (startAt={params['startAt']})...", flush=True)
         try:
             response = requests.get(url, params=params, headers=headers, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
@@ -53,14 +54,16 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
             print(f"  âŒ Erro na requisiÃ§Ã£o: {e}", flush=True)
             raise
         
+        total = data.get('total', 0)
         issues_count = len(data.get('issues', []))
         
-        # Verificar se nÃ£o vieram issues novas
+        print(f"  ðŸ“Š Total no Jira: {total} | Retornadas nesta pÃ¡gina: {issues_count}", flush=True)
+        
         if issues_count == 0:
             print(f"  ðŸ Nenhuma issue retornada, finalizando", flush=True)
             break
         
-        # Adicionar apenas issues Ãºnicas (sem duplicatas)
+        # Adicionar apenas issues Ãºnicas
         new_issues = 0
         for issue in data['issues']:
             issue_key = issue['key']
@@ -69,35 +72,28 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
                 all_issues.append(issue)
                 new_issues += 1
         
-        print(f"  âœ… {issues_count} issues retornadas, {new_issues} novas (total Ãºnico: {len(all_issues)})", flush=True)
+        print(f"  âœ… {new_issues} novas issues (total Ãºnico: {len(all_issues)} de {total})", flush=True)
         
-        # Debug: mostrar algumas keys
-        if len(all_issues) <= 10:
-            print(f"  ðŸ” Keys atÃ© agora: {', '.join(sorted(seen_keys))}", flush=True)
+        # Se coletamos tudo, parar
+        if len(all_issues) >= total:
+            print(f"  ðŸ Todas as {total} issues coletadas!", flush=True)
+            break
         
-        # Se nÃ£o vieram issues novas, parar (API retornando duplicatas)
+        # Se nÃ£o vieram issues novas, parar
         if new_issues == 0:
-            print(f"  ðŸ Apenas duplicatas retornadas, finalizando", flush=True)
+            print(f"  ðŸ Apenas duplicatas, finalizando", flush=True)
             break
         
-        if data.get('isLast', True):
-            print(f"  ðŸ Ãšltima pÃ¡gina alcanÃ§ada (isLast=True)", flush=True)
-            break
+        # PrÃ³xima pÃ¡gina
+        params['startAt'] += issues_count
+        page += 1
         
-        # PaginaÃ§Ã£o com nextPageToken (novo formato)
-        if 'nextPageToken' in data:
-            params['pageToken'] = data['nextPageToken']
-            page += 1
-        else:
-            print(f"  ðŸ Sem nextPageToken, finalizando", flush=True)
-            break
-        
-        # Limite de seguranÃ§a (mÃ¡ximo 50 pÃ¡ginas)
-        if page > 50:
-            print(f"  âš ï¸ Limite de 50 pÃ¡ginas atingido, abortando", flush=True)
+        # Limite de seguranÃ§a
+        if page > 10:
+            print(f"  âš ï¸ Limite de 10 pÃ¡ginas atingido", flush=True)
             break
     
-    print(f"  ðŸ“‹ Issues Ãºnicas coletadas: {len(all_issues)}", flush=True)
+    print(f"  ðŸ“‹ Total coletado: {len(all_issues)} issues Ãºnicas", flush=True)
     return all_issues
 
 def analyze_data():
