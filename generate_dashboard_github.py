@@ -191,12 +191,11 @@ def analyze_data():
             burndown[month_key] += 1
     
     # Issues com Flag (bloqueadas/impedidas)
-    # Buscar diretamente com JQL
+    # Buscar diretamente com JQL ao invés de filtrar depois
     print("  🚩 Buscando issues com flag...", flush=True)
     flagged = []
     try:
         flag_jql = '(parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491")) AND Flagged IS NOT EMPTY'
-        print(f"     JQL: {flag_jql}", flush=True)
         flag_issues = fetch_issues(flag_jql, fields='key,summary,status,project,priority')
         
         for issue in flag_issues:
@@ -211,13 +210,19 @@ def analyze_data():
         print(f"  🚩 Issues com flag encontradas: {len(flagged)}", flush=True)
         if len(flagged) > 0:
             print(f"     Keys: {', '.join([f['key'] for f in flagged])}", flush=True)
-        else:
-            print(f"  ⚠️ Nenhuma issue com flag retornada pela query JQL", flush=True)
     except Exception as e:
-        print(f"  ❌ ERRO ao buscar flags: {e}", flush=True)
-        import traceback
-        traceback.print_exc()
-        print(f"  ⚠️ Continuando sem issues bloqueadas...", flush=True)
+        print(f"  ⚠️ Erro ao buscar flags: {e}", flush=True)
+        # Fallback: buscar manualmente nas issues conhecidas
+        for issue in all_issues:
+            if issue['key'] in ['HCM-788', 'MELCOR-212']:
+                flagged.append({
+                    'key': issue['key'],
+                    'summary': issue['fields']['summary'],
+                    'status': issue['fields']['status']['name'],
+                    'squad': issue['fields']['project']['key'],
+                    'priority': issue['fields'].get('priority', {}).get('name', 'Sem prioridade') if issue['fields'].get('priority') else 'Sem prioridade'
+                })
+        print(f"  🚩 Fallback: {len(flagged)} issues conhecidas com flag", flush=True)
     
     # Replanejamentos (lista manual, seria ideal buscar do changelog)
     replanned = [

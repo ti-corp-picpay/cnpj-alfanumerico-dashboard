@@ -33,6 +33,9 @@ jobs:
       env:
         JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
         JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+        PYTHONIOENCODING: utf-8
+        LC_ALL: C.UTF-8
+        LANG: C.UTF-8
       run: |
         python generate_dashboard.py
     
