@@ -110,11 +110,30 @@ def analyze_data():
     
     print("ðŸ” Buscando todas as issues da iniciativa CPTECHC-491...", flush=True)
     
-    # JQL EXATO conforme especificado (com ORDER BY para paginaÃ§Ã£o consistente)
-    jql = 'parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491") ORDER BY project ASC, statusCategory ASC, updated DESC'
+    # EstratÃ©gia: buscar por squad para evitar limite de 100
+    squads = ['PLD', 'COMFA', 'HCM', 'GEL', 'TICORP', 'MELCOR', 'EFCONT', 'CFERP']
+    all_issues = []
+    seen_keys = set()
     
-    try:
-        all_issues = fetch_issues(jql)
+    for squad in squads:
+        jql = f'project = {squad} AND (parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491")) ORDER BY updated DESC'
+        print(f"  ðŸ” Buscando issues do squad {squad}...", flush=True)
+        
+        try:
+            squad_issues = fetch_issues(jql)
+            # Adicionar apenas Ãºnicas
+            new_count = 0
+            for issue in squad_issues:
+                if issue['key'] not in seen_keys:
+                    seen_keys.add(issue['key'])
+                    all_issues.append(issue)
+                    new_count += 1
+            print(f"     âœ… {new_count} issues novas do {squad}", flush=True)
+        except Exception as e:
+            print(f"     âš ï¸ Erro ao buscar {squad}: {e}", flush=True)
+            continue
+    
+    print(f"âœ… Total de {len(all_issues)} issues Ãºnicas encontradas", flush=True)
     except Exception as e:
         print(f"âŒ Erro ao buscar issues: {e}", flush=True)
         raise
