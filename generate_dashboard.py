@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Dashboard Generator - CPTECHC-491
 Busca dados do Jira e gera HTML atualizado
@@ -12,20 +12,20 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import requests
 
-# Configuração via env vars
+# ConfiguraÃ§Ã£o via env vars
 JIRA_EMAIL = os.getenv('JIRA_EMAIL')
 JIRA_TOKEN = os.getenv('JIRA_TOKEN')
 JIRA_BASE_URL = 'https://picpay.atlassian.net'
 REQUEST_TIMEOUT = 30  # segundos
 
 def get_jira_auth():
-    """Retorna o header de autenticação Basic Auth"""
+    """Retorna o header de autenticaÃ§Ã£o Basic Auth"""
     credentials = f"{JIRA_EMAIL}:{JIRA_TOKEN}"
     encoded = base64.b64encode(credentials.encode()).decode()
     return {'Authorization': f'Basic {encoded}'}
 
 def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021,customfield_10400'):
-    """Busca issues do Jira com paginação (flagged = campo de Flag)"""
+    """Busca issues do Jira com paginaÃ§Ã£o (flagged = campo de Flag)"""
     # Usar o endpoint antigo que funciona
     url = f"{JIRA_BASE_URL}/rest/api/2/search/jql"
     all_issues = []
@@ -40,31 +40,31 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
     headers = get_jira_auth()
     headers['Content-Type'] = 'application/json'
     
-    print(f"  🔍 Endpoint: {url}", flush=True)
-    print(f"  📝 JQL: {jql}", flush=True)
+    print(f"  ðŸ” Endpoint: {url}", flush=True)
+    print(f"  ðŸ“ JQL: {jql}", flush=True)
     
     page = 1
     while True:
-        print(f"  📄 Buscando página {page}...", flush=True)
+        print(f"  ðŸ“„ Buscando pÃ¡gina {page}...", flush=True)
         try:
             response = requests.get(url, params=params, headers=headers, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
             data = response.json()
         except requests.exceptions.Timeout:
-            print(f"  ⚠️ Timeout na página {page}, tentando novamente...", flush=True)
+            print(f"  âš ï¸ Timeout na pÃ¡gina {page}, tentando novamente...", flush=True)
             continue
         except requests.exceptions.RequestException as e:
-            print(f"  ❌ Erro na requisição: {e}", flush=True)
-            print(f"  🔍 Response status: {response.status_code if 'response' in locals() else 'N/A'}", flush=True)
+            print(f"  âŒ Erro na requisiÃ§Ã£o: {e}", flush=True)
+            print(f"  ðŸ” Response status: {response.status_code if 'response' in locals() else 'N/A'}", flush=True)
             raise
         
         issues_count = len(data.get('issues', []))
         
         if issues_count == 0:
-            print(f"  🏁 Nenhuma issue retornada, finalizando", flush=True)
+            print(f"  ðŸ Nenhuma issue retornada, finalizando", flush=True)
             break
         
-        # Adicionar apenas issues únicas
+        # Adicionar apenas issues Ãºnicas
         new_issues = 0
         for issue in data['issues']:
             issue_key = issue['key']
@@ -73,70 +73,70 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
                 all_issues.append(issue)
                 new_issues += 1
         
-        print(f"  ✅ {issues_count} issues retornadas, {new_issues} novas (total único: {len(all_issues)})", flush=True)
+        print(f"  âœ… {issues_count} issues retornadas, {new_issues} novas (total Ãºnico: {len(all_issues)})", flush=True)
         
-        # Se não vieram issues novas, parar
+        # Se nÃ£o vieram issues novas, parar
         if new_issues == 0:
-            print(f"  🏁 Apenas duplicatas, finalizando", flush=True)
+            print(f"  ðŸ Apenas duplicatas, finalizando", flush=True)
             break
         
-        # Verificar se tem mais páginas
+        # Verificar se tem mais pÃ¡ginas
         is_last = data.get('isLast', True)
         has_next_token = 'nextPageToken' in data
         
-        print(f"  🔍 isLast={is_last}, hasNextToken={has_next_token}", flush=True)
+        print(f"  ðŸ” isLast={is_last}, hasNextToken={has_next_token}", flush=True)
         
         if is_last and not has_next_token:
-            print(f"  🏁 Última página alcançada", flush=True)
+            print(f"  ðŸ Ãšltima pÃ¡gina alcanÃ§ada", flush=True)
             break
         
         if has_next_token:
             params['pageToken'] = data['nextPageToken']
             page += 1
         else:
-            print(f"  🏁 Sem nextPageToken, finalizando", flush=True)
+            print(f"  ðŸ Sem nextPageToken, finalizando", flush=True)
             break
         
         if page > 10:
-            print(f"  ⚠️ Limite de 10 páginas atingido", flush=True)
+            print(f"  âš ï¸ Limite de 10 pÃ¡ginas atingido", flush=True)
             break
     
-    print(f"  📋 Total coletado: {len(all_issues)} issues únicas", flush=True)
-    print(f"  🔑 Keys: {', '.join(sorted(seen_keys)[:20])}{'...' if len(seen_keys) > 20 else ''}", flush=True)
+    print(f"  ðŸ“‹ Total coletado: {len(all_issues)} issues Ãºnicas", flush=True)
+    print(f"  ðŸ”‘ Keys: {', '.join(sorted(seen_keys)[:20])}{'...' if len(seen_keys) > 20 else ''}", flush=True)
     return all_issues
 
 def analyze_data():
-    """Busca e analisa todos os dados necessários"""
+    """Busca e analisa todos os dados necessÃ¡rios"""
     
-    print("🔍 Buscando todas as issues da iniciativa CPTECHC-491...", flush=True)
+    print("ðŸ” Buscando todas as issues da iniciativa CPTECHC-491...", flush=True)
     
-    # Estratégia: buscar por squad para evitar limite de 100
+    # EstratÃ©gia: buscar por squad para evitar limite de 100
     squads = ['PLD', 'COMFA', 'HCM', 'GEL', 'TICORP', 'MELCOR', 'EFCONT', 'CFERP']
     all_issues = []
     seen_keys = set()
     
     for squad in squads:
         jql = f'project = {squad} AND (parent = CPTECHC-491 OR parent IN portfolioChildIssuesOf("CPTECHC-491")) ORDER BY updated DESC'
-        print(f"  🔍 Buscando issues do squad {squad}...", flush=True)
+        print(f"  ðŸ” Buscando issues do squad {squad}...", flush=True)
         
         try:
             squad_issues = fetch_issues(jql)
-            # Adicionar apenas únicas
+            # Adicionar apenas Ãºnicas
             new_count = 0
             for issue in squad_issues:
                 if issue['key'] not in seen_keys:
                     seen_keys.add(issue['key'])
                     all_issues.append(issue)
                     new_count += 1
-            print(f"     ✅ {new_count} issues novas do {squad}", flush=True)
+            print(f"     âœ… {new_count} issues novas do {squad}", flush=True)
         except Exception as e:
-            print(f"     ⚠️ Erro ao buscar {squad}: {e}", flush=True)
+            print(f"     âš ï¸ Erro ao buscar {squad}: {e}", flush=True)
             continue
     
-    print(f"✅ Total de {len(all_issues)} issues únicas encontradas", flush=True)
+    print(f"âœ… Total de {len(all_issues)} issues Ãºnicas encontradas", flush=True)
     
-    # Métricas básicas
-    print("📊 Calculando métricas...", flush=True)
+    # MÃ©tricas bÃ¡sicas
+    print("ðŸ“Š Calculando mÃ©tricas...", flush=True)
     total = len(all_issues)
     done = [i for i in all_issues if i['fields']['status']['name'] == 'Done']
     in_progress = [i for i in all_issues if i['fields']['status']['statusCategory']['key'] == 'indeterminate']
@@ -146,7 +146,7 @@ def analyze_data():
     # Issues pendentes
     pending = [i for i in all_issues if i['fields']['status']['name'] not in ['Done', 'Cancelled']]
     
-    # Baseline vs Inject (criadas até 31/12/2025 vs depois)
+    # Baseline vs Inject (criadas atÃ© 31/12/2025 vs depois)
     baseline_date = datetime(2025, 12, 31)
     baseline = [i for i in all_issues if datetime.fromisoformat(i['fields']['created'].replace('Z', '+00:00')).replace(tzinfo=None) <= baseline_date]
     inject = [i for i in all_issues if datetime.fromisoformat(i['fields']['created'].replace('Z', '+00:00')).replace(tzinfo=None) > baseline_date]
@@ -182,7 +182,7 @@ def analyze_data():
         project = issue['fields']['project']['key']
         no_duedate_by_squad[project] += 1
     
-    # Burndown (conclusões por mês)
+    # Burndown (conclusÃµes por mÃªs)
     burndown = defaultdict(int)
     for issue in done:
         if issue['fields'].get('resolutiondate'):
@@ -191,7 +191,7 @@ def analyze_data():
             burndown[month_key] += 1
     
     # Issues com Flag (bloqueadas/impedidas)
-    # Campo correto: customfield_10400 com value="Impedimento"
+    # Campo correto: customfield_10400 (atualizado) com value="Impedimento"
     flagged = []
     for issue in all_issues:
         flag_field = issue['fields'].get('customfield_10400')
@@ -213,15 +213,15 @@ def analyze_data():
                 'priority': issue['fields'].get('priority', {}).get('name', 'Sem prioridade') if issue['fields'].get('priority') else 'Sem prioridade'
             })
     
-    print(f"  🚩 Issues com flag encontradas: {len(flagged)}", flush=True)
+    print(f"  ðŸš© Issues com flag encontradas: {len(flagged)}", flush=True)
     if len(flagged) > 0:
         print(f"     Keys: {', '.join([f['key'] for f in flagged])}", flush=True)
     
     # Replanejamentos (lista manual, seria ideal buscar do changelog)
     replanned = [
-        {'key': 'COMFA-702', 'times': 4, 'info': 'Dez/25 → Jun/26 (+5 meses)'},
-        {'key': 'COMFA-698', 'times': 2, 'info': 'Fev/26 → Jun/26 (+3 meses)'},
-        {'key': 'HCM-788', 'times': 2, 'info': 'Jan/26 → Abr/26 (+2.5 meses)'}
+        {'key': 'COMFA-702', 'times': 4, 'info': 'Dez/25 â†’ Jun/26 (+5 meses)'},
+        {'key': 'COMFA-698', 'times': 2, 'info': 'Fev/26 â†’ Jun/26 (+3 meses)'},
+        {'key': 'HCM-788', 'times': 2, 'info': 'Jan/26 â†’ Abr/26 (+2.5 meses)'}
     ]
     
     return {
@@ -248,13 +248,13 @@ def analyze_data():
 def calculate_risk(data):
     """Calcula os indicadores de risco"""
     
-    print("⚠️ Calculando riscos...", flush=True)
+    print("âš ï¸ Calculando riscos...", flush=True)
     
     # Risco de prazo
-    months_remaining = 3  # até junho/26
+    months_remaining = 3  # atÃ© junho/26
     pending = data['pending']
     
-    # Média dos últimos 3 meses
+    # MÃ©dia dos Ãºltimos 3 meses
     recent_months = list(data['burndown'].values())[-3:] if len(data['burndown']) >= 3 else list(data['burndown'].values())
     avg_velocity = sum(recent_months) / len(recent_months) if recent_months else 0
     
@@ -263,15 +263,15 @@ def calculate_risk(data):
     if avg_velocity >= required_velocity * 1.2:
         deadline_risk = 'BAIXO'
         deadline_color = 'success'
-        deadline_icon = '🟢'
+        deadline_icon = 'ðŸŸ¢'
     elif avg_velocity >= required_velocity * 0.8:
-        deadline_risk = 'MÉDIO'
+        deadline_risk = 'MÃ‰DIO'
         deadline_color = 'warning'
-        deadline_icon = '🟡'
+        deadline_icon = 'ðŸŸ¡'
     else:
         deadline_risk = 'ALTO'
         deadline_color = 'danger'
-        deadline_icon = '🔴'
+        deadline_icon = 'ðŸ”´'
     
     # Risco operacional
     critical_count = data['priority_counts'].get('Critical', 0)
@@ -280,15 +280,15 @@ def calculate_risk(data):
     if critical_count >= 15 or no_date_count >= 10:
         operational_risk = 'ALTO'
         operational_color = 'danger'
-        operational_icon = '🔴'
+        operational_icon = 'ðŸ”´'
     elif critical_count >= 8 or no_date_count >= 5:
-        operational_risk = 'MÉDIO'
+        operational_risk = 'MÃ‰DIO'
         operational_color = 'warning'
-        operational_icon = '🟡'
+        operational_icon = 'ðŸŸ¡'
     else:
         operational_risk = 'BAIXO'
         operational_color = 'success'
-        operational_icon = '🟢'
+        operational_icon = 'ðŸŸ¢'
     
     return {
         'deadline': {
@@ -308,47 +308,48 @@ def calculate_risk(data):
     }
 
 if __name__ == '__main__':
-    print("🚀 Gerando Dashboard CPTECHC-491...", flush=True)
-    print(f"⏰ Timestamp: {datetime.now().isoformat()}", flush=True)
+    print("ðŸš€ Gerando Dashboard CPTECHC-491...", flush=True)
+    print(f"â° Timestamp: {datetime.now().isoformat()}", flush=True)
     
     # Validar env vars
     if not JIRA_EMAIL or not JIRA_TOKEN:
-        print("❌ Erro: JIRA_EMAIL e JIRA_TOKEN devem estar definidos como variáveis de ambiente", flush=True)
+        print("âŒ Erro: JIRA_EMAIL e JIRA_TOKEN devem estar definidos como variÃ¡veis de ambiente", flush=True)
         sys.exit(1)
     
-    print(f"✅ Credenciais configuradas (email: {JIRA_EMAIL[:3]}***)", flush=True)
+    print(f"âœ… Credenciais configuradas (email: {JIRA_EMAIL[:3]}***)", flush=True)
     
     try:
         # Buscar e analisar dados
         data = analyze_data()
-        print(f"✅ Análise completa:", flush=True)
+        print(f"âœ… AnÃ¡lise completa:", flush=True)
         print(f"   Total: {data['total']} issues", flush=True)
         print(f"   Done: {data['done']} | Pendentes: {data['pending']}", flush=True)
         print(f"   Baseline: {data['baseline']} | Inject: {data['inject']}", flush=True)
         
         # Calcular risco
         risk = calculate_risk(data)
-        print(f"📊 Risco de Prazo: {risk['deadline']['icon']} {risk['deadline']['level']}", flush=True)
-        print(f"📊 Risco Operacional: {risk['operational']['icon']} {risk['operational']['level']}", flush=True)
+        print(f"ðŸ“Š Risco de Prazo: {risk['deadline']['icon']} {risk['deadline']['level']}", flush=True)
+        print(f"ðŸ“Š Risco Operacional: {risk['operational']['icon']} {risk['operational']['level']}", flush=True)
         
         # Salvar dados brutos
         output_file = 'dashboard-data.json'
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump({'data': data, 'risk': risk}, f, indent=2, ensure_ascii=False)
-        print(f"💾 Dados salvos em {output_file}", flush=True)
+        print(f"ðŸ’¾ Dados salvos em {output_file}", flush=True)
         
         # Gerar HTML
-        print("🎨 Gerando HTML do dashboard...", flush=True)
+        print("ðŸŽ¨ Gerando HTML do dashboard...", flush=True)
         from html_generator import generate_html
         html = generate_html(data, risk)
         with open('dashboard.html', 'w', encoding='utf-8') as f:
             f.write(html)
-        print("✅ dashboard.html gerado com sucesso!", flush=True)
+        print("âœ… dashboard.html gerado com sucesso!", flush=True)
         
-        print("✅ Dashboard completo gerado com sucesso!", flush=True)
+        print("âœ… Dashboard completo gerado com sucesso!", flush=True)
         
     except Exception as e:
-        print(f"❌ Erro fatal: {e}", flush=True)
+        print(f"âŒ Erro fatal: {e}", flush=True)
         import traceback
         traceback.print_exc()
         sys.exit(1)
+
