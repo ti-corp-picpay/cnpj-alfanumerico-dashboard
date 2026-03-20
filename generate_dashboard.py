@@ -33,7 +33,7 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
     params = {
         'jql': jql,
         'fields': fields,
-        'maxResults': 100
+        'maxResults': 200  # Aumentar para pegar mais de uma vez
     }
     
     headers = get_jira_auth()
@@ -71,13 +71,17 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
         
         print(f"  âœ… {issues_count} issues retornadas, {new_issues} novas (total Ãºnico: {len(all_issues)})", flush=True)
         
+        # Debug: mostrar algumas keys
+        if len(all_issues) <= 10:
+            print(f"  ðŸ” Keys atÃ© agora: {', '.join(sorted(seen_keys))}", flush=True)
+        
         # Se nÃ£o vieram issues novas, parar (API retornando duplicatas)
         if new_issues == 0:
             print(f"  ðŸ Apenas duplicatas retornadas, finalizando", flush=True)
             break
         
         if data.get('isLast', True):
-            print(f"  ðŸ Ãšltima pÃ¡gina alcanÃ§ada", flush=True)
+            print(f"  ðŸ Ãšltima pÃ¡gina alcanÃ§ada (isLast=True)", flush=True)
             break
         
         # PaginaÃ§Ã£o com nextPageToken (novo formato)
@@ -93,6 +97,7 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
             print(f"  âš ï¸ Limite de 50 pÃ¡ginas atingido, abortando", flush=True)
             break
     
+    print(f"  ðŸ“‹ Issues Ãºnicas coletadas: {len(all_issues)}", flush=True)
     return all_issues
 
 def analyze_data():
