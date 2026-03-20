@@ -1,11 +1,11 @@
 {
   "data": {
     "total": 2000,
-    "done": 1400,
-    "in_progress": 480,
+    "done": 1420,
+    "in_progress": 460,
     "backlog": 80,
     "cancelled": 40,
-    "pending": 560,
+    "pending": 540,
     "baseline": 1160,
     "inject": 840,
     "no_duedate": 180,
@@ -14,14 +14,14 @@
       "GEL": 80
     },
     "priority_counts": {
-      "Critical": 300,
+      "Critical": 280,
       "High": 40,
       "Low": 120,
       "Média": 40,
       "Médio": 60
     },
     "squad_pending": {
-      "COMFA": 180,
+      "COMFA": 160,
       "HCM": 140,
       "GEL": 100,
       "TICORP": 80,
@@ -43,7 +43,7 @@
       "PLD": 820,
       "HCM": 100,
       "GEL": 40,
-      "COMFA": 440
+      "COMFA": 460
     },
     "burndown": {
       "2025-09": 240,
@@ -52,7 +52,7 @@
       "2025-12": 20,
       "2026-01": 220,
       "2026-02": 380,
-      "2026-03": 300
+      "2026-03": 320
     },
     "replanned": [
       {
@@ -71,21 +71,21 @@
         "info": "Jan/26 â†’ Abr/26 (+2.5 meses)"
       }
     ],
-    "generated_at": "2026-03-19T20:39:28.748864"
+    "generated_at": "2026-03-20T11:32:42.911684"
   },
   "risk": {
     "deadline": {
       "level": "BAIXO",
       "color": "success",
       "icon": "ðŸŸ¢",
-      "avg_velocity": 300.0,
-      "required_velocity": 186.66666666666666
+      "avg_velocity": 306.6666666666667,
+      "required_velocity": 180.0
     },
     "operational": {
       "level": "ALTO",
       "color": "danger",
       "icon": "ðŸ”´",
-      "critical_count": 300,
+      "critical_count": 280,
       "no_date_count": 180
     }
   }
