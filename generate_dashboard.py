@@ -24,7 +24,7 @@ def get_jira_auth():
     encoded = base64.b64encode(credentials.encode()).decode()
     return {'Authorization': f'Basic {encoded}'}
 
-def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021,flagged'):
+def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021,customfield_10400'):
     """Busca issues do Jira com paginação (flagged = campo de Flag)"""
     # Usar o endpoint antigo que funciona
     url = f"{JIRA_BASE_URL}/rest/api/2/search/jql"
@@ -191,36 +191,18 @@ def analyze_data():
             burndown[month_key] += 1
     
     # Issues com Flag (bloqueadas/impedidas)
+    # Campo correto: customfield_10400 com value="Impedimento"
     flagged = []
     for issue in all_issues:
-        # Flag pode estar em vários campos possíveis
-        flag_field = (
-            issue['fields'].get('customfield_10021') or  # Campo comum de Flag
-            issue['fields'].get('flagged') or
-            issue['fields'].get('customfield_10000') or
-            issue['fields'].get('impediment')
-        )
-        
-        # Debug: imprimir campos disponíveis da primeira issue
-        if len(flagged) == 0 and len(all_issues) > 0:
-            print(f"  🔍 Campos disponíveis na issue {issue['key']}: {', '.join(issue['fields'].keys())}", flush=True)
+        flag_field = issue['fields'].get('customfield_10400')
         
         has_flag = False
-        
-        # Verificar diferentes formatos de flag
         if flag_field:
-            if isinstance(flag_field, list):
-                # Lista de objetos (ex: [{"value": "Impediment"}])
-                has_flag = len(flag_field) > 0
-            elif isinstance(flag_field, dict):
-                # Objeto (ex: {"value": "Impediment"})
-                has_flag = bool(flag_field.get('value'))
+            if isinstance(flag_field, dict):
+                # Formato: {"value": "Impedimento", "id": "10205"}
+                has_flag = flag_field.get('value') == 'Impedimento'
             elif isinstance(flag_field, str):
-                # String direta
-                has_flag = len(flag_field) > 0
-            elif isinstance(flag_field, bool):
-                # Boolean
-                has_flag = flag_field
+                has_flag = flag_field.lower() == 'impedimento'
         
         if has_flag:
             flagged.append({
