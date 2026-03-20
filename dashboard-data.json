@@ -59,34 +59,34 @@
       {
         "key": "COMFA-702",
         "times": 4,
-        "info": "Dez/25 → Jun/26 (+5 meses)"
+        "info": "Dez/25 â†’ Jun/26 (+5 meses)"
       },
       {
         "key": "COMFA-698",
         "times": 2,
-        "info": "Fev/26 → Jun/26 (+3 meses)"
+        "info": "Fev/26 â†’ Jun/26 (+3 meses)"
       },
       {
         "key": "HCM-788",
         "times": 2,
-        "info": "Jan/26 → Abr/26 (+2.5 meses)"
+        "info": "Jan/26 â†’ Abr/26 (+2.5 meses)"
       }
     ],
     "flagged": [],
-    "generated_at": "2026-03-20T20:13:39.861585"
+    "generated_at": "2026-03-20T20:31:47.908752"
   },
   "risk": {
     "deadline": {
       "level": "BAIXO",
       "color": "success",
-      "icon": "🟢",
+      "icon": "ðŸŸ¢",
       "avg_velocity": 17.0,
       "required_velocity": 10.333333333333334
     },
     "operational": {
       "level": "ALTO",
       "color": "danger",
-      "icon": "🔴",
+      "icon": "ðŸ”´",
       "critical_count": 15,
       "no_date_count": 9
     }
