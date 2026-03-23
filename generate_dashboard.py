@@ -222,10 +222,53 @@ def analyze_data():
     
     # Replanejamentos (lista manual, seria ideal buscar do changelog)
     replanned = [
-        {'key': 'COMFA-702', 'times': 4, 'info': 'Dez/25 → Jun/26 (+5 meses)'},
-        {'key': 'COMFA-698', 'times': 2, 'info': 'Fev/26 → Jun/26 (+3 meses)'},
-        {'key': 'HCM-788', 'times': 2, 'info': 'Jan/26 → Abr/26 (+2.5 meses)'}
+        {'key': 'COMFA-702', 'times': 4, 'info': 'Dez/25 \u2192 Jun/26 (+5 meses)'},
+        {'key': 'COMFA-698', 'times': 2, 'info': 'Fev/26 \u2192 Jun/26 (+3 meses)'},
+        {'key': 'HCM-788', 'times': 2, 'info': 'Jan/26 \u2192 Abr/26 (+2.5 meses)'}
     ]
+    
+    # Dependências da iniciativa CPTECHC-491
+    print("  🔗 Buscando dependências...", flush=True)
+    dependencies = []
+    try:
+        dep_jql = 'issue in linkedIssues(CPTECHC-491, "blocks") OR issue in linkedIssues(CPTECHC-491)'
+        dep_issues = fetch_issues(dep_jql, fields='key,summary,status,project,priority,issuelinks')
+        
+        for issue in dep_issues:
+            # Pegar os links da issue
+            links = issue['fields'].get('issuelinks', [])
+            link_type = ''
+            linked_to = ''
+            
+            for link in links:
+                # Verificar se é um link com CPTECHC-491
+                if link.get('inwardIssue', {}).get('key') == 'CPTECHC-491':
+                    link_type = link.get('type', {}).get('inward', '')
+                    linked_to = 'CPTECHC-491'
+                    break
+                elif link.get('outwardIssue', {}).get('key') == 'CPTECHC-491':
+                    link_type = link.get('type', {}).get('outward', '')
+                    linked_to = 'CPTECHC-491'
+                    break
+            
+            dependencies.append({
+                'key': issue['key'],
+                'summary': issue['fields']['summary'],
+                'status': issue['fields']['status']['name'],
+                'status_color': issue['fields']['status'].get('statusCategory', {}).get('key', 'new'),
+                'project': issue['fields']['project']['key'],
+                'priority': issue['fields'].get('priority', {}).get('name', 'Sem prioridade') if issue['fields'].get('priority') else 'Sem prioridade',
+                'link_type': link_type,
+                'linked_to': linked_to
+            })
+        
+        print(f"  🔗 Dependências encontradas: {len(dependencies)}", flush=True)
+        if len(dependencies) > 0:
+            print(f"     Keys: {', '.join([d['key'] for d in dependencies])}", flush=True)
+    except Exception as e:
+        print(f"  ❌ ERRO ao buscar dependências: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
     
     return {
         'total': total,
@@ -245,6 +288,7 @@ def analyze_data():
         'burndown': dict(sorted(burndown.items())),
         'flagged': flagged,
         'replanned': replanned,
+        'dependencies': dependencies,
         'generated_at': datetime.now().isoformat()
     }
 

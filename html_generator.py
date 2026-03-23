@@ -943,9 +943,75 @@ def generate_html(data, risk):
             </div>
         </div>
         
+        <!-- Dependências -->
+        <div class="section">
+            <div class="section-title">&#x1F517; Dependências da Iniciativa</div>
+            <div style="margin-bottom: 1rem; color: #6b7280; font-size: 0.9rem;">
+                Issues vinculadas à iniciativa CPTECHC-491 (bloqueios e relacionamentos)
+            </div>
+"""
+    
+    deps = data.get('dependencies', [])
+    if len(deps) > 0:
+        html += """
+            <table>
+                <thead>
+                    <tr>
+                        <th>Issue</th>
+                        <th>Projeto</th>
+                        <th>Status</th>
+                        <th>Prioridade</th>
+                        <th>Tipo de Link</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+"""
+        for dep in deps:
+            status_name = dep['status']
+            status_cat = dep.get('status_color', 'new')
+            
+            if status_cat == 'done':
+                badge_class = 'success'
+            elif status_cat == 'indeterminate':
+                badge_class = 'warning'
+            else:
+                badge_class = 'danger'
+            
+            link_label = dep.get('link_type', '') or 'Relacionada'
+            jira_link = f"https://picpay.atlassian.net/browse/{dep['key']}"
+            
+            html += f"""
+                    <tr>
+                        <td>
+                            <a href="{jira_link}" target="_blank" style="color: #21C25E; text-decoration: none; font-weight: 600;">{dep['key']}</a>
+                            <div style="font-size: 0.8rem; color: #6b7280; margin-top: 2px;">{dep['summary'][:80]}{'...' if len(dep['summary']) > 80 else ''}</div>
+                        </td>
+                        <td class="squad-name">{dep['project']}</td>
+                        <td><span class="badge {badge_class}">{status_name}</span></td>
+                        <td>{dep['priority']}</td>
+                        <td><span style="font-size: 0.85rem; color: #6b7280;">{link_label}</span></td>
+                        <td><a href="{jira_link}" target="_blank" class="link">Ver issue &rarr;</a></td>
+                    </tr>
+"""
+        
+        html += """
+                </tbody>
+            </table>
+"""
+    else:
+        html += """
+            <div style="text-align: center; padding: 2rem; color: #9ca3af;">
+                Nenhuma dependência encontrada
+            </div>
+"""
+    
+    html += """
+        </div>
+        
         <footer>
             Dashboard gerado automaticamente via GitHub Actions<br>
-            Dados atualizados diariamente às 08h (horário de Brasília)
+            Dados atualizados 2x ao dia (8h e 14h), segunda a sexta
         </footer>
     </div>
 </body>
