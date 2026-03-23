@@ -27,8 +27,8 @@ def get_jira_auth():
 
 def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assignee,resolutiondate,created,customfield_10021,customfield_10400'):
     """Busca issues do Jira com paginação"""
-    # Usar o endpoint correto (não o /jql que dá 410)
-    url = f"{JIRA_BASE_URL}/rest/api/2/search"
+    # Usar o endpoint que funciona externamente
+    url = f"{JIRA_BASE_URL}/rest/api/2/search/jql"
     all_issues = []
     seen_keys = set()
     
@@ -81,21 +81,22 @@ def fetch_issues(jql, fields='key,summary,status,project,priority,duedate,assign
             print(f"  🏁 Apenas duplicatas, finalizando", flush=True)
             break
         
-        # Verificar se tem mais páginas (API v2 usa startAt + total)
-        total = data.get('total', 0)
-        start_at = data.get('startAt', 0)
-        max_results = data.get('maxResults', 100)
+        # Verificar se tem mais páginas (API /search/jql usa pageToken)
+        is_last = data.get('isLast', True)
+        has_next_token = 'nextPageToken' in data
         
-        print(f"  🔍 startAt={start_at}, total={total}, maxResults={max_results}", flush=True)
+        print(f"  🔍 isLast={is_last}, hasNextToken={has_next_token}", flush=True)
         
-        # Se já pegamos tudo, parar
-        if start_at + max_results >= total:
-            print(f"  🏁 Todas as issues coletadas", flush=True)
+        if is_last and not has_next_token:
+            print(f"  🏁 Última página alcançada", flush=True)
             break
         
-        # Próxima página
-        params['startAt'] = start_at + max_results
-        page += 1
+        if has_next_token:
+            params['pageToken'] = data['nextPageToken']
+            page += 1
+        else:
+            print(f"  🏁 Sem nextPageToken, finalizando", flush=True)
+            break
         
         if page > 10:
             print(f"  ⚠️ Limite de 10 páginas atingido", flush=True)

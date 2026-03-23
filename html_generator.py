@@ -745,14 +745,14 @@ def generate_html(data, risk):
                     </tr>
 """
     
-    html += """
+    html += f"""
                 </tbody>
             </table>
         </div>
         
         <!-- Issues sem Due Date -->
         <div class="section">
-            <div class="section-title">⚠️ Issues sem Due Date ({data['no_duedate']} no total)</div>
+            <div class="section-title">⚠️ Issues sem Due Date ({no_duedate_total} no total)</div>
             <table>
                 <thead>
                     <tr>
