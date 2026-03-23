@@ -1,84 +1,21 @@
 {
   "data": {
-    "total": 109,
-    "done": 78,
-    "in_progress": 24,
-    "backlog": 5,
-    "cancelled": 2,
-    "pending": 29,
-    "baseline": 62,
-    "inject": 47,
-    "no_duedate": 8,
-    "no_duedate_by_squad": {
-      "HCM": 5,
-      "GEL": 3
-    },
-    "priority_counts": {
-      "Critical": 15,
-      "Médio": 3,
-      "Low": 7,
-      "Média": 2,
-      "High": 2
-    },
-    "squad_pending": {
-      "COMFA": 8,
-      "HCM": 7,
-      "GEL": 4,
-      "TICORP": 4,
-      "CFERP": 4,
-      "MELCOR": 1,
-      "EFCONT": 1
-    },
-    "squad_total": {
-      "PLD": 43,
-      "COMFA": 31,
-      "HCM": 12,
-      "GEL": 11,
-      "TICORP": 4,
-      "MELCOR": 2,
-      "EFCONT": 1,
-      "CFERP": 5
-    },
-    "squad_done": {
-      "PLD": 41,
-      "COMFA": 23,
-      "HCM": 5,
-      "GEL": 7,
-      "MELCOR": 1,
-      "CFERP": 1
-    },
-    "burndown": {
-      "2025-09": 12,
-      "2025-10": 10,
-      "2025-11": 2,
-      "2025-12": 1,
-      "2026-01": 11,
-      "2026-02": 19,
-      "2026-03": 23
-    },
-    "flagged": [
-      {
-        "key": "HCM-788",
-        "summary": "[Único] - Adequações CNPJ Alfanumérico",
-        "status": "In development",
-        "squad": "HCM",
-        "priority": "Médio"
-      },
-      {
-        "key": "COMFA-1000",
-        "summary": "[Netlex] CNPJ Alfanumérico",
-        "status": "Waiting Release",
-        "squad": "COMFA",
-        "priority": "Critical"
-      },
-      {
-        "key": "COMFA-692",
-        "summary": "[Compliance] CNPJ Alfanumérico ",
-        "status": "Waiting Release",
-        "squad": "COMFA",
-        "priority": "Critical"
-      }
-    ],
+    "total": 0,
+    "done": 0,
+    "in_progress": 0,
+    "backlog": 0,
+    "cancelled": 0,
+    "pending": 0,
+    "baseline": 0,
+    "inject": 0,
+    "no_duedate": 0,
+    "no_duedate_by_squad": {},
+    "priority_counts": {},
+    "squad_pending": {},
+    "squad_total": {},
+    "squad_done": {},
+    "burndown": {},
+    "flagged": [],
     "replanned": [
       {
         "key": "COMFA-702",
@@ -96,22 +33,23 @@
         "info": "Jan/26 → Abr/26 (+2.5 meses)"
       }
     ],
-    "generated_at": "2026-03-23T13:23:23.029504"
+    "dependencies": [],
+    "generated_at": "2026-03-23T18:47:01.258105"
   },
   "risk": {
     "deadline": {
-      "level": "BAIXO",
-      "color": "success",
-      "icon": "check",
-      "avg_velocity": 17.666666666666668,
-      "required_velocity": 4.833333333333333
-    },
-    "operational": {
       "level": "MEDIO",
       "color": "warning",
       "icon": "warning",
-      "critical_count": 2,
-      "no_date_count": 8
+      "avg_velocity": 0,
+      "required_velocity": 0.0
+    },
+    "operational": {
+      "level": "BAIXO",
+      "color": "success",
+      "icon": "check",
+      "critical_count": 0,
+      "no_date_count": 0
     }
   }
 }
