@@ -1,23 +1,22 @@
 {
   "data": {
     "total": 109,
-    "done": 77,
-    "in_progress": 25,
+    "done": 78,
+    "in_progress": 24,
     "backlog": 5,
     "cancelled": 2,
-    "pending": 30,
+    "pending": 29,
     "baseline": 62,
     "inject": 47,
-    "no_duedate": 9,
+    "no_duedate": 8,
     "no_duedate_by_squad": {
       "HCM": 5,
-      "GEL": 3,
-      "MELCOR": 1
+      "GEL": 3
     },
     "priority_counts": {
       "Critical": 15,
       "Médio": 3,
-      "Low": 8,
+      "Low": 7,
       "Média": 2,
       "High": 2
     },
@@ -27,7 +26,7 @@
       "GEL": 4,
       "TICORP": 4,
       "CFERP": 4,
-      "MELCOR": 2,
+      "MELCOR": 1,
       "EFCONT": 1
     },
     "squad_total": {
@@ -45,6 +44,7 @@
       "COMFA": 23,
       "HCM": 5,
       "GEL": 7,
+      "MELCOR": 1,
       "CFERP": 1
     },
     "burndown": {
@@ -54,16 +54,9 @@
       "2025-12": 1,
       "2026-01": 11,
       "2026-02": 19,
-      "2026-03": 22
+      "2026-03": 23
     },
     "flagged": [
-      {
-        "key": "MELCOR-212",
-        "summary": "Dashboard para Status Report (NA)",
-        "status": "In development",
-        "squad": "MELCOR",
-        "priority": "Low"
-      },
       {
         "key": "HCM-788",
         "summary": "[Único] - Adequações CNPJ Alfanumérico",
@@ -103,22 +96,22 @@
         "info": "Jan/26 → Abr/26 (+2.5 meses)"
       }
     ],
-    "generated_at": "2026-03-23T12:37:20.032171"
+    "generated_at": "2026-03-23T13:23:23.029504"
   },
   "risk": {
     "deadline": {
       "level": "BAIXO",
       "color": "success",
       "icon": "check",
-      "avg_velocity": 17.333333333333332,
-      "required_velocity": 5.0
+      "avg_velocity": 17.666666666666668,
+      "required_velocity": 4.833333333333333
     },
     "operational": {
       "level": "MEDIO",
       "color": "warning",
       "icon": "warning",
       "critical_count": 2,
-      "no_date_count": 9
+      "no_date_count": 8
     }
   }
 }
