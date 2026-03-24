@@ -1,43 +1,44 @@
 {
   "data": {
-    "total": 116,
-    "done": 80,
-    "in_progress": 26,
-    "backlog": 8,
+    "total": 138,
+    "done": 87,
+    "in_progress": 28,
+    "backlog": 21,
     "cancelled": 2,
-    "pending": 34,
+    "pending": 49,
     "baseline": 62,
-    "inject": 54,
-    "no_duedate": 13,
+    "inject": 76,
+    "no_duedate": 28,
     "no_duedate_by_squad": {
+      "COMFA": 4,
       "HCM": 5,
-      "GEL": 3,
-      "MELCOR": 4,
+      "GEL": 10,
+      "MELCOR": 8,
       "EFCONT": 1
     },
     "priority_counts": {
       "Critical": 15,
+      "Low": 27,
       "Médio": 3,
-      "Low": 12,
       "Média": 2,
       "High": 2
     },
     "squad_pending": {
-      "COMFA": 8,
+      "COMFA": 12,
+      "GEL": 11,
+      "MELCOR": 9,
       "HCM": 7,
-      "MELCOR": 5,
-      "GEL": 4,
       "TICORP": 4,
       "CFERP": 4,
       "EFCONT": 2
     },
     "squad_total": {
       "PLD": 43,
-      "COMFA": 31,
+      "COMFA": 35,
       "HCM": 12,
-      "GEL": 11,
+      "GEL": 25,
       "TICORP": 4,
-      "MELCOR": 8,
+      "MELCOR": 12,
       "EFCONT": 2,
       "CFERP": 5
     },
@@ -45,7 +46,7 @@
       "PLD": 41,
       "COMFA": 23,
       "HCM": 5,
-      "GEL": 7,
+      "GEL": 14,
       "MELCOR": 3,
       "CFERP": 1
     },
@@ -56,7 +57,7 @@
       "2025-12": 1,
       "2026-01": 11,
       "2026-02": 19,
-      "2026-03": 25
+      "2026-03": 32
     },
     "flagged": [
       {
@@ -150,22 +151,22 @@
         "linked_to": "CPTECHC-491"
       }
     ],
-    "generated_at": "2026-03-24T11:46:53.781458"
+    "generated_at": "2026-03-24T16:44:42.048738"
   },
   "risk": {
     "deadline": {
       "level": "BAIXO",
       "color": "success",
       "icon": "check",
-      "avg_velocity": 18.333333333333332,
-      "required_velocity": 5.666666666666667
+      "avg_velocity": 20.666666666666668,
+      "required_velocity": 8.166666666666666
     },
     "operational": {
-      "level": "MEDIO",
-      "color": "warning",
-      "icon": "warning",
+      "level": "ALTO",
+      "color": "danger",
+      "icon": "alert",
       "critical_count": 2,
-      "no_date_count": 13
+      "no_date_count": 28
     }
   }
 }
