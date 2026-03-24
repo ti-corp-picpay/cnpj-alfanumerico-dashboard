@@ -1,34 +1,35 @@
 {
   "data": {
-    "total": 111,
-    "done": 79,
-    "in_progress": 25,
-    "backlog": 5,
+    "total": 116,
+    "done": 80,
+    "in_progress": 26,
+    "backlog": 8,
     "cancelled": 2,
-    "pending": 30,
+    "pending": 34,
     "baseline": 62,
-    "inject": 49,
-    "no_duedate": 9,
+    "inject": 54,
+    "no_duedate": 13,
     "no_duedate_by_squad": {
       "HCM": 5,
       "GEL": 3,
-      "MELCOR": 1
+      "MELCOR": 4,
+      "EFCONT": 1
     },
     "priority_counts": {
       "Critical": 15,
       "Médio": 3,
-      "Low": 8,
+      "Low": 12,
       "Média": 2,
       "High": 2
     },
     "squad_pending": {
       "COMFA": 8,
       "HCM": 7,
+      "MELCOR": 5,
       "GEL": 4,
       "TICORP": 4,
       "CFERP": 4,
-      "MELCOR": 2,
-      "EFCONT": 1
+      "EFCONT": 2
     },
     "squad_total": {
       "PLD": 43,
@@ -36,8 +37,8 @@
       "HCM": 12,
       "GEL": 11,
       "TICORP": 4,
-      "MELCOR": 4,
-      "EFCONT": 1,
+      "MELCOR": 8,
+      "EFCONT": 2,
       "CFERP": 5
     },
     "squad_done": {
@@ -45,7 +46,7 @@
       "COMFA": 23,
       "HCM": 5,
       "GEL": 7,
-      "MELCOR": 2,
+      "MELCOR": 3,
       "CFERP": 1
     },
     "burndown": {
@@ -55,7 +56,7 @@
       "2025-12": 1,
       "2026-01": 11,
       "2026-02": 19,
-      "2026-03": 24
+      "2026-03": 25
     },
     "flagged": [
       {
@@ -149,22 +150,22 @@
         "linked_to": "CPTECHC-491"
       }
     ],
-    "generated_at": "2026-03-23T19:17:17.397270"
+    "generated_at": "2026-03-24T11:46:53.781458"
   },
   "risk": {
     "deadline": {
       "level": "BAIXO",
       "color": "success",
       "icon": "check",
-      "avg_velocity": 18.0,
-      "required_velocity": 5.0
+      "avg_velocity": 18.333333333333332,
+      "required_velocity": 5.666666666666667
     },
     "operational": {
       "level": "MEDIO",
       "color": "warning",
       "icon": "warning",
       "critical_count": 2,
-      "no_date_count": 9
+      "no_date_count": 13
     }
   }
 }
