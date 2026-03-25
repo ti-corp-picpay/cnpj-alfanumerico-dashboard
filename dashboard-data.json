@@ -1,13 +1,13 @@
 {
   "data": {
-    "total": 138,
-    "done": 86,
-    "in_progress": 29,
+    "total": 139,
+    "done": 88,
+    "in_progress": 28,
     "backlog": 21,
     "cancelled": 2,
-    "pending": 50,
+    "pending": 49,
     "baseline": 62,
-    "inject": 76,
+    "inject": 77,
     "no_duedate": 29,
     "no_duedate_by_squad": {
       "COMFA": 4,
@@ -17,8 +17,8 @@
       "EFCONT": 1
     },
     "priority_counts": {
-      "Critical": 15,
       "Low": 28,
+      "Critical": 14,
       "Médio": 3,
       "Média": 2,
       "High": 2
@@ -29,7 +29,7 @@
       "MELCOR": 9,
       "HCM": 7,
       "TICORP": 4,
-      "CFERP": 4,
+      "CFERP": 3,
       "EFCONT": 2
     },
     "squad_total": {
@@ -38,7 +38,7 @@
       "HCM": 12,
       "GEL": 25,
       "TICORP": 4,
-      "MELCOR": 12,
+      "MELCOR": 13,
       "EFCONT": 2,
       "CFERP": 5
     },
@@ -47,8 +47,8 @@
       "COMFA": 23,
       "HCM": 5,
       "GEL": 13,
-      "MELCOR": 3,
-      "CFERP": 1
+      "MELCOR": 4,
+      "CFERP": 2
     },
     "burndown": {
       "2025-09": 12,
@@ -57,7 +57,7 @@
       "2025-12": 1,
       "2026-01": 11,
       "2026-02": 19,
-      "2026-03": 31
+      "2026-03": 33
     },
     "flagged": [
       {
@@ -151,15 +151,15 @@
         "linked_to": "CPTECHC-491"
       }
     ],
-    "generated_at": "2026-03-24T17:54:49.216255"
+    "generated_at": "2026-03-25T11:44:00.641823"
   },
   "risk": {
     "deadline": {
       "level": "BAIXO",
       "color": "success",
       "icon": "check",
-      "avg_velocity": 20.333333333333332,
-      "required_velocity": 8.333333333333334
+      "avg_velocity": 21.0,
+      "required_velocity": 8.166666666666666
     },
     "operational": {
       "level": "ALTO",
