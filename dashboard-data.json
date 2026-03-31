@@ -1,24 +1,23 @@
 {
   "data": {
     "total": 139,
-    "done": 89,
-    "in_progress": 28,
-    "backlog": 20,
+    "done": 90,
+    "in_progress": 29,
+    "backlog": 18,
     "cancelled": 2,
-    "pending": 48,
+    "pending": 47,
     "baseline": 62,
     "inject": 77,
-    "no_duedate": 28,
+    "no_duedate": 26,
     "no_duedate_by_squad": {
-      "COMFA": 3,
+      "COMFA": 2,
       "HCM": 5,
       "GEL": 11,
-      "MELCOR": 8,
-      "EFCONT": 1
+      "MELCOR": 8
     },
     "priority_counts": {
-      "Low": 27,
-      "Critical": 14,
+      "Low": 25,
+      "Critical": 15,
       "High": 2,
       "Médio": 3,
       "Média": 2
@@ -28,7 +27,7 @@
       "COMFA": 11,
       "MELCOR": 9,
       "HCM": 7,
-      "TICORP": 4,
+      "TICORP": 3,
       "CFERP": 3,
       "EFCONT": 2
     },
@@ -47,6 +46,7 @@
       "COMFA": 24,
       "HCM": 5,
       "GEL": 13,
+      "TICORP": 1,
       "MELCOR": 4,
       "CFERP": 2
     },
@@ -57,9 +57,16 @@
       "2025-12": 1,
       "2026-01": 11,
       "2026-02": 19,
-      "2026-03": 34
+      "2026-03": 35
     },
     "flagged": [
+      {
+        "key": "TICORP-1853",
+        "summary": "[FIDC] CNPJ Alfanumérico ",
+        "status": "Waiting Release",
+        "squad": "TICORP",
+        "priority": "Critical"
+      },
       {
         "key": "HCM-788",
         "summary": "[Único] - Adequações CNPJ Alfanumérico",
@@ -158,22 +165,22 @@
         "linked_to": "CPTECHC-491"
       }
     ],
-    "generated_at": "2026-03-30T17:53:09.836519"
+    "generated_at": "2026-03-31T11:52:35.747922"
   },
   "risk": {
     "deadline": {
       "level": "BAIXO",
       "color": "success",
       "icon": "check",
-      "avg_velocity": 21.333333333333332,
-      "required_velocity": 8.0
+      "avg_velocity": 21.666666666666668,
+      "required_velocity": 7.833333333333333
     },
     "operational": {
       "level": "ALTO",
       "color": "danger",
       "icon": "alert",
       "critical_count": 2,
-      "no_date_count": 28
+      "no_date_count": 26
     }
   }
 }
