@@ -2,8 +2,8 @@
   "data": {
     "total": 140,
     "done": 92,
-    "in_progress": 29,
-    "backlog": 17,
+    "in_progress": 31,
+    "backlog": 15,
     "cancelled": 2,
     "pending": 46,
     "baseline": 62,
@@ -72,13 +72,6 @@
         "status": "In development",
         "squad": "HCM",
         "priority": "Médio"
-      },
-      {
-        "key": "GEL-2281",
-        "summary": "[LEGAL] Dashboards - CNPJ alfanumérico",
-        "status": "In development",
-        "squad": "GEL",
-        "priority": "Low"
       },
       {
         "key": "COMFA-1000",
@@ -164,7 +157,7 @@
         "linked_to": "CPTECHC-491"
       }
     ],
-    "generated_at": "2026-04-01T11:54:18.548564"
+    "generated_at": "2026-04-01T17:47:54.796593"
   },
   "risk": {
     "deadline": {
