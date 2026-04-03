@@ -1,30 +1,30 @@
 {
   "data": {
     "total": 168,
-    "done": 120,
-    "in_progress": 31,
+    "done": 121,
+    "in_progress": 30,
     "backlog": 15,
     "cancelled": 2,
-    "pending": 46,
+    "pending": 45,
     "baseline": 62,
     "inject": 106,
-    "no_duedate": 24,
+    "no_duedate": 23,
     "no_duedate_by_squad": {
       "HCM": 5,
       "GEL": 11,
-      "MELCOR": 8
+      "MELCOR": 7
     },
     "priority_counts": {
       "Critical": 16,
       "High": 2,
       "Médio": 3,
-      "Low": 23,
+      "Low": 22,
       "Média": 2
     },
     "squad_pending": {
       "GEL": 12,
       "COMFA": 9,
-      "MELCOR": 9,
+      "MELCOR": 8,
       "HCM": 7,
       "TICORP": 4,
       "CFERP": 3,
@@ -46,7 +46,7 @@
       "HCM": 5,
       "GEL": 40,
       "TICORP": 2,
-      "MELCOR": 4,
+      "MELCOR": 5,
       "CFERP": 2
     },
     "burndown": {
@@ -57,7 +57,7 @@
       "2026-01": 11,
       "2026-02": 19,
       "2026-03": 37,
-      "2026-04": 28
+      "2026-04": 29
     },
     "flagged": [
       {
@@ -86,6 +86,13 @@
         "summary": "[Compliance] CNPJ Alfanumérico ",
         "status": "Waiting Release",
         "squad": "COMFA",
+        "priority": "Critical"
+      },
+      {
+        "key": "CFERP-834",
+        "summary": "[Orion Dash e Finance Hub] - Novo CNPJ Alfanumerico",
+        "status": "Ready to Test",
+        "squad": "CFERP",
         "priority": "Critical"
       }
     ],
@@ -158,22 +165,22 @@
         "linked_to": "CPTECHC-491"
       }
     ],
-    "generated_at": "2026-04-02T17:48:07.343949"
+    "generated_at": "2026-04-03T11:39:18.492170"
   },
   "risk": {
     "deadline": {
       "level": "BAIXO",
       "color": "success",
       "icon": "check",
-      "avg_velocity": 28.0,
-      "required_velocity": 7.666666666666667
+      "avg_velocity": 28.333333333333332,
+      "required_velocity": 7.5
     },
     "operational": {
       "level": "ALTO",
       "color": "danger",
       "icon": "alert",
       "critical_count": 2,
-      "no_date_count": 24
+      "no_date_count": 23
     }
   }
 }
